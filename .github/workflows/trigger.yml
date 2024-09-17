@@ -3,6 +3,7 @@ name: Trigger Vercel API
 on:
   schedule:
     - cron: "*/1 * * * *" # Runs every minute
+  workflow_dispatch: # Add this line to allow manual triggering
 
 jobs:
   trigger-api:
