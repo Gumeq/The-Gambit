@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import crypto from "crypto";
 import { pusher } from "@/lib/pusher/pusher";
 import { processBetsAfterSpin } from "@/lib/wheel/game-state";
 import { getNumberColorName } from "@/utils/roulette/roulette-functions";
 
-// Function to generate a random spin result
+// Function to generate a random spin result using Math.random()
 function generateRandomSpin() {
-  // Generate a truly random integer between 0 and 51
-  const spinResult = crypto.randomInt(0, 52);
+  // Generate a random integer between 0 and 51 using Math.random()
+  const spinResult = Math.floor(Math.random() * 52);
+  console.log("Generated spin result:", spinResult);
   return spinResult;
 }
 
@@ -18,6 +18,7 @@ function delay(ms: number) {
 
 export async function GET() {
   try {
+    // Generate the random spin result
     const spinResult = generateRandomSpin();
     const spinResultColor = getNumberColorName(spinResult);
 
@@ -34,12 +35,15 @@ export async function GET() {
     // Process bets placed in the last minute
     await processBetsAfterSpin(spinResultColor);
 
-    // Set the headers to disable caching
+    // Create the response and disable caching
     const response = NextResponse.json({
       message: "Spin triggered",
       result: spinResult,
     });
-    response.headers.set("Cache-Control", "no-store, max-age=0");
+    response.headers.set(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+    );
     return response;
   } catch (error) {
     console.error("Error during spin:", error);
