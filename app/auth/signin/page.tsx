@@ -31,9 +31,11 @@ const SignIn = () => {
 
       // Check if the document exists and if it contains a balance
       let balance = 10000; // Default balance for new users
+      let rank = 0;
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
         balance = userData.balance ?? 0; // Use existing balance if available, otherwise default to 0
+        rank = userData.rank ?? 0;
       }
 
       // Store user data in Firestore, but preserve the existing balance
@@ -46,6 +48,7 @@ const SignIn = () => {
           photoURL: user.photoURL,
           lastLogin: new Date(),
           balance: balance, // Keep the existing balance or set to 0 for new users
+          rank: rank,
         },
         { merge: true },
       ); // Use merge option to update fields without overwriting the entire document

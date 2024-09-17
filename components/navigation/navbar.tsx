@@ -61,45 +61,49 @@ const Navbar = ({ children }: NavbarProps) => {
             <h1 className="mx-8 text-xl font-bold">THE GAMBIT</h1>
             <div className="gradient-line absolute bottom-0 h-1 w-full opacity-80"></div>
           </Link>
-          <div className="flex flex-row items-center gap-4">
-            <div className="flex h-12 flex-row items-center gap-2 rounded-md bg-foreground/10 p-2 font-bold drop-shadow-md">
-              <img
-                src="/assets/images/chip.png"
-                className="ml-2 h-4 w-4"
-                alt=""
-              />
-              <UserBalance></UserBalance>
-              <div className="h-full w-4"></div>
-              <div className="flex h-8 items-center rounded-md bg-primary px-4">
-                Cashier
-              </div>
-            </div>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <div className="flex flex-row items-center gap-4 rounded-md bg-foreground/10 p-2 drop-shadow-md">
-                  <img
-                    src={user?.photoURL || ""}
-                    alt=""
-                    className="aspect-square h-8 rounded-sm"
-                  />
-                  <p className="text-sm font-semibold">{user?.displayName}</p>
-                  <div className="z-10 h-8 w-8 rounded-sm bg-foreground/5 drop-shadow-lg"></div>
+          {user ? (
+            <div className="flex flex-row items-center gap-4">
+              <div className="flex h-12 flex-row items-center gap-2 rounded-md bg-foreground/10 p-2 font-bold drop-shadow-md">
+                <img
+                  src="/assets/images/chip.png"
+                  className="ml-2 h-4 w-4"
+                  alt=""
+                />
+                <UserBalance></UserBalance>
+                <div className="h-full w-4"></div>
+                <div className="flex h-8 items-center rounded-md bg-primary px-4">
+                  Cashier
                 </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Deposit</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <ModeToggle></ModeToggle>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <div className="z-10 h-12 w-12 rounded-md bg-foreground/5 drop-shadow-lg"></div>
-            <div className="z-10 h-12 w-12 rounded-md bg-foreground/5 drop-shadow-lg"></div>
-          </div>
+              </div>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <div className="flex flex-row items-center gap-4 rounded-md bg-foreground/10 p-2 drop-shadow-md">
+                    <img
+                      src={user?.photoURL || ""}
+                      alt=""
+                      className="aspect-square h-8 rounded-sm"
+                    />
+                    <p className="text-sm font-semibold">{user?.displayName}</p>
+                    <div className="z-10 h-8 w-8 rounded-sm bg-foreground/5 drop-shadow-lg"></div>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Profile</DropdownMenuItem>
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem>Deposit</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <ModeToggle></ModeToggle>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <div className="z-10 h-12 w-12 rounded-md bg-foreground/5 drop-shadow-lg"></div>
+              <div className="z-10 h-12 w-12 rounded-md bg-foreground/5 drop-shadow-lg"></div>
+            </div>
+          ) : (
+            <Link href={"/auth/signin"}>No user</Link>
+          )}
         </div>
       </div>
       <div className="relative hidden flex-row lg:flex lg:h-svh lg:w-screen">

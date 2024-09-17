@@ -19,9 +19,13 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
   const cx = radius; // Center x-coordinate
   const cy = radius; // Center y-coordinate
   const [pointerColor, setPointerColor] = useState("#ffffff"); // Default pointer color
+  const [timeLeft, setTimeLeft] = useState("00:00"); // Timer state
+  const [spinning, setSpinning] = useState(false); // State to track if the wheel is spinning
 
   const numbers = useMemo(() => Array.from({ length: 53 }, (_, i) => i), []);
   const totalNumbers = numbers.length;
+
+  const targetSecond = 5;
 
   const segments = useMemo(() => {
     return numbers.map((number, i) => {
@@ -44,6 +48,37 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
   }, [numbers, cx, cy, radius, totalNumbers]);
 
   useEffect(() => {
+    const updateTimeLeft = () => {
+      const now = new Date();
+      let nextTarget = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        targetSecond,
+        0,
+      );
+
+      // If the target second has already passed in the current minute, move to the next minute
+      if (now.getSeconds() >= targetSecond) {
+        nextTarget.setMinutes(nextTarget.getMinutes() + 1);
+      }
+
+      const timeDiff = nextTarget.getTime() - now.getTime();
+      const secondsLeft = Math.floor((timeDiff % 60000) / 1000);
+      const millisecondsLeft = Math.floor((timeDiff % 1000) / 10);
+
+      setTimeLeft(`${secondsLeft.toString().padStart(2, "0")}`);
+    };
+
+    // Update every 10 milliseconds for smooth countdown
+    const intervalId = setInterval(updateTimeLeft, 10);
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
+
+  useEffect(() => {
     if (wheelRef.current && targetNumber !== null) {
       const totalRotation = 360 * 3; // 3 full rotations
       const segmentAngle = 360 / totalNumbers;
@@ -63,6 +98,9 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
       wheelRef.current.style.transform = `rotate(0deg)`;
       wheelRef.current.getBoundingClientRect(); // Force reflow to ensure the reset takes effect
 
+      // Set spinning state to true before starting the spin
+      setSpinning(true);
+
       // Spin the wheel to the target number
       setTimeout(() => {
         wheelRef.current!.style.transition = `transform ${remainingDuration}ms cubic-bezier(0.33, 1, 0.68, 1)`;
@@ -72,6 +110,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
       // Change the pointer color after the spin completes
       setTimeout(() => {
         setPointerColor(getNumberColorHex(targetNumber)); // Change pointer color after spin
+        setSpinning(false); // Set spinning state to false after the spin completes
       }, remainingDuration + 100); // Wait for the spin duration before updating the pointer color
     }
   }, [targetNumber, spinStartTime, spinDuration, totalNumbers]);
@@ -110,6 +149,20 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
           r={radius * 0.95}
           fill="hsl(var(--background))"
         />
+        {/* Timer Text in the Center, hidden when spinning */}
+        {!spinning && (
+          <text
+            x="50%"
+            y="50%"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontSize="96"
+            fill="white"
+            fontWeight="bold"
+          >
+            {timeLeft}
+          </text>
+        )}
       </svg>
 
       {/* Pointer adjusted to bottom and facing down */}

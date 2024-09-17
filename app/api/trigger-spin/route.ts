@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { pusher } from "@/lib/pusher/pusher";
-import { processBetsAfterSpin } from "@/lib/wheel/game-state";
+import { processBetsAfterSpin, saveSpin } from "@/lib/wheel/game-state";
 import { getNumberColorName } from "@/utils/roulette/roulette-functions";
 import { randomInt } from "crypto";
 
@@ -37,7 +37,7 @@ export async function GET() {
     await delay(5200);
 
     // Process bets placed in the last minute
-    await processBetsAfterSpin(spinResultColor);
+    await saveSpin(spinResultColor);
 
     // Create the response and disable caching
     const response = NextResponse.json({
