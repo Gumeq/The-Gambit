@@ -34,7 +34,13 @@ export async function GET() {
     // Process bets placed in the last minute
     await processBetsAfterSpin(spinResultColor);
 
-    return NextResponse.json({ message: "Spin triggered", result: spinResult });
+    // Set the headers to disable caching
+    const response = NextResponse.json({
+      message: "Spin triggered",
+      result: spinResult,
+    });
+    response.headers.set("Cache-Control", "no-store, max-age=0");
+    return response;
   } catch (error) {
     console.error("Error during spin:", error);
     return NextResponse.json(
