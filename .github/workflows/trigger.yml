@@ -1,0 +1,12 @@
+name: Trigger Vercel API
+
+on:
+  schedule:
+    - cron: "*/1 * * * *" # Runs every minute
+
+jobs:
+  trigger-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Vercel API
+        run: curl -X GET https://thegambit.vercel.app/api/trigger-spin
