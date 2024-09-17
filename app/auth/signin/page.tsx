@@ -30,7 +30,7 @@ const SignIn = () => {
       const userDocSnap = await getDoc(userDocRef);
 
       // Check if the document exists and if it contains a balance
-      let balance = 0; // Default balance for new users
+      let balance = 10000; // Default balance for new users
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
         balance = userData.balance ?? 0; // Use existing balance if available, otherwise default to 0
