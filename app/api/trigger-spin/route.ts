@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import { pusher } from "@/lib/pusher/pusher";
 import { processBetsAfterSpin } from "@/lib/wheel/game-state";
 import { getNumberColorName } from "@/utils/roulette/roulette-functions";
+import { randomInt } from "crypto"; // Import randomInt from crypto module
 
-// Function to generate a random spin result using Math.random()
+// Function to generate a random spin result using crypto.randomInt()
 function generateRandomSpin() {
-  // Generate a random integer between 0 and 51 using Math.random()
-  const spinResult = Math.floor(Math.random() * 52);
+  // Generate a random integer between 0 and 51 using crypto.randomInt()
+  const spinResult = randomInt(0, 52); // The upper bound is exclusive
   console.log("Generated spin result:", spinResult);
   return spinResult;
 }
