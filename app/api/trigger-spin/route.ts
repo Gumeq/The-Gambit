@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { pusher } from "@/lib/pusher/pusher";
 import { processBetsAfterSpin } from "@/lib/wheel/game-state";
 import { getNumberColorName } from "@/utils/roulette/roulette-functions";
-import { randomInt } from "crypto"; // Import randomInt from crypto module
+import { randomInt } from "crypto";
+
+// Disable caching for this route
+export const dynamic = "force-dynamic";
 
 // Function to generate a random spin result using crypto.randomInt()
 function generateRandomSpin() {
