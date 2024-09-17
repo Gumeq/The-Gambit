@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  DocumentData,
   getDocs,
   query,
   serverTimestamp,
@@ -11,7 +12,6 @@ import {
 import { db } from "@/config/firebase"; // Firebase config
 import { incrementUserBalance } from "@/utils/firebase/user-data";
 import { Color } from "@/utils/firebase/wheel-bets";
-import { getNumberColorName } from "@/utils/roulette/roulette-functions";
 
 export type Bet = {
   userId: string;
@@ -57,7 +57,7 @@ export async function getRecentBets(winningColor: Color) {
     );
 
     const betsSnapshot = await getDocs(q);
-    const bets: any[] = [];
+    const bets: DocumentData[] = [];
 
     betsSnapshot.forEach((doc) => {
       bets.push({ id: doc.id, ...doc.data() });

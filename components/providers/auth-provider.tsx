@@ -3,11 +3,11 @@
 import { createContext, useEffect, useState, useContext } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth, db } from "@/config/firebase"; // Ensure you have Firestore initialized in your firebase config
-import { doc, getDoc, onSnapshot } from "firebase/firestore"; // Import Firestore methods
+import { doc, DocumentData, getDoc, onSnapshot } from "firebase/firestore"; // Import Firestore methods
 
 interface AuthContextProps {
   user: User | null;
-  userData: any | null; // Store user data fetched from Firestore
+  userData: DocumentData | null; // Store user data fetched from Firestore
   balance: number | null; // Real-time balance
   loading: boolean;
 }
@@ -16,7 +16,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userData, setUserData] = useState<any | null>(null); // New state to store Firestore user data
+  const [userData, setUserData] = useState<DocumentData | null>(null); // New state to store Firestore user data
   const [balance, setBalance] = useState<number | null>(null); // Real-time balance state
   const [loading, setLoading] = useState(true);
 

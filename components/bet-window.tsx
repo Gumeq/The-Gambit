@@ -27,8 +27,6 @@ const BetWindow = ({
 
   const handleMaxBet = () => {
     // Assuming you want to set some kind of max limit, e.g., balance (user balance needs to be fetched)
-    // For now, we'll assume max bet is a hardcoded value like 10000
-    const maxBet = 10000; // This should be fetched from the user's balance or some defined limit
     if (balance) {
       setBetAmount(balance);
     }

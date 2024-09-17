@@ -4,12 +4,11 @@
 import React, { useState, useEffect } from "react";
 import BetWindow from "@/components/bet-window";
 import BetTypeButtons from "@/components/bet-type-buttons";
-import { fetchUserData, updateUserBalance } from "@/utils/firebase/user-data";
-import { fetchLatestSpin } from "@/utils/firebase/wheel-spins";
+import { updateUserBalance } from "@/utils/firebase/user-data";
 import { useAuth } from "@/components/providers/auth-provider";
 import Pusher from "pusher-js";
 import RouletteWheel from "@/components/roulette-wheel";
-import { addBet, Bet } from "@/lib/wheel/game-state";
+import { addBet } from "@/lib/wheel/game-state";
 
 const Page = () => {
   const [betAmount, setBetAmount] = useState(0);

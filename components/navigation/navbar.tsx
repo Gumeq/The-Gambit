@@ -36,14 +36,18 @@ import {
 // app/components/ClientComponent.jsx
 // This directive marks the component as a client component
 
-import React, { useState } from "react";
+import React, { ReactNode } from "react";
 import { ModeToggle } from "../theme/ThemeSwitchButton";
 import { useAuth } from "../providers/auth-provider";
 import UserBalance from "../user/user-balance";
 import Link from "next/link";
 
-const Navbar = ({ children }: any) => {
-  const { user, loading } = useAuth();
+interface NavbarProps {
+  children: ReactNode;
+}
+
+const Navbar = ({ children }: NavbarProps) => {
+  const { user } = useAuth();
   return (
     <nav className="z-50">
       <div

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import nookies from "nookies";
 
 const SignIn = () => {
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   const handleGoogleSignIn = async () => {
@@ -54,8 +54,8 @@ const SignIn = () => {
 
       // Redirect to dashboard after successful login
       router.push("/");
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error) {
+      console.log(error);
     }
   };
 

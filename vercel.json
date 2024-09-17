@@ -1,0 +1,10 @@
+{
+  "cron": {
+    "jobs": [
+      {
+        "path": "/api/trigger-spin",
+        "schedule": "*/1 * * * *"
+      }
+    ]
+  }
+}
