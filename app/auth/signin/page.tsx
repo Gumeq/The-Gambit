@@ -3,12 +3,10 @@
 import { auth, googleProvider, db } from "../../../config/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { setDoc, doc, getDoc } from "firebase/firestore"; // Added getDoc to retrieve the user document
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import nookies from "nookies";
 
 const SignIn = () => {
-  const [error, setError] = useState(null);
   const router = useRouter();
 
   const handleGoogleSignIn = async () => {
@@ -63,7 +61,6 @@ const SignIn = () => {
     <div className="flex h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-xs rounded-lg bg-white p-8 shadow-md">
         <h1 className="mb-4 text-xl font-bold">Sign In</h1>
-        {error && <p className="text-red-500">{error}</p>}
         <button
           onClick={handleGoogleSignIn}
           className="w-full rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"

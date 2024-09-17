@@ -16,7 +16,7 @@ const Page = () => {
   const [spinStartTime, setSpinStartTime] = useState<number | null>(null);
   const spinDuration = 5000; // Example spin duration of 5 seconds
 
-  const { user, balance, userData } = useAuth();
+  const { user, balance } = useAuth();
 
   useEffect(() => {
     // Initialize Pusher
