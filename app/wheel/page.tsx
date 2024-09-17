@@ -72,7 +72,7 @@ const Page = () => {
         <div className="">
           <h2 className="text-lg font-semibold text-foreground">LAST 100</h2>
           <div className="my-2 h-[1px] w-full bg-foreground/10"></div>
-          <div className="flex flex-row justify-between">
+          {/* <div className="flex flex-row justify-between">
             <div className="flex h-14 w-20 items-center justify-center rounded-md border">
               48
             </div>
@@ -85,7 +85,7 @@ const Page = () => {
             <div className="flex h-14 w-20 items-center justify-center rounded-md border">
               1
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
