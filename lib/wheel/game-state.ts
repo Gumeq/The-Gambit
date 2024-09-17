@@ -1,7 +1,6 @@
 import {
   addDoc,
   collection,
-  deleteDoc,
   doc,
   DocumentData,
   getDoc,
