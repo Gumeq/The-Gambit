@@ -7,11 +7,7 @@ import { updateUserBalance } from "@/utils/firebase/user-data";
 import { useAuth } from "@/components/providers/auth-provider";
 import Pusher from "pusher-js";
 import RouletteWheel from "@/components/roulette-wheel";
-import {
-  addBet,
-  fetchInitialSpinID,
-  listenToSpinData,
-} from "@/lib/wheel/game-state";
+import { addBet, listenToSpinData } from "@/lib/wheel/game-state";
 
 const Page = () => {
   const [betAmount, setBetAmount] = useState(0);

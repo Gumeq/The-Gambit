@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { pusher } from "@/lib/pusher/pusher";
-import { processBetsAfterSpin, saveSpin } from "@/lib/wheel/game-state";
+import { saveSpin } from "@/lib/wheel/game-state";
 import { getNumberColorName } from "@/utils/roulette/roulette-functions";
 import { randomInt } from "crypto";
 

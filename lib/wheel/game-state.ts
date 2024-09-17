@@ -104,11 +104,6 @@ export async function processBetsAfterSpin(spinResult: Color, spinId: number) {
       } else {
         console.log(`User ${userId} did not win. No balance update.`);
       }
-
-      // Clear bet after processing
-      const betDocRef = doc(db, "bets", bet.id);
-      await deleteDoc(betDocRef);
-      console.log(`Bet cleared for UserId: ${userId}, BetId: ${bet.id}`);
     }
   } catch (error) {
     console.error("Error processing bets after spin:", error);

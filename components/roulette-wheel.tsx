@@ -50,7 +50,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
   useEffect(() => {
     const updateTimeLeft = () => {
       const now = new Date();
-      let nextTarget = new Date(
+      const nextTarget = new Date(
         now.getFullYear(),
         now.getMonth(),
         now.getDate(),
@@ -67,7 +67,6 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
 
       const timeDiff = nextTarget.getTime() - now.getTime();
       const secondsLeft = Math.floor((timeDiff % 60000) / 1000);
-      const millisecondsLeft = Math.floor((timeDiff % 1000) / 10);
 
       setTimeLeft(`${secondsLeft.toString().padStart(2, "0")}`);
     };
