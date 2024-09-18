@@ -35,7 +35,7 @@ export default function UserBalance() {
     <p
       className={`font-bold transition-all duration-100 ease-in-out ${balanceChangeClass}`}
     >
-      {balance !== null ? balance : "0"} USD
+      {balance !== null ? balance : "0"}
     </p>
   );
 }

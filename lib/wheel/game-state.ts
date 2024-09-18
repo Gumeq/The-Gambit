@@ -14,6 +14,7 @@ import {
 import { db } from "@/config/firebase"; // Firebase config
 import { incrementUserBalance } from "@/utils/firebase/user-data";
 import { Color } from "@/utils/firebase/wheel-bets";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export type Bet = {
   userId: string;
@@ -31,8 +32,10 @@ export async function addBet(
 ) {
   try {
     const betsCollectionRef = collection(db, "wheel_bets");
+    const userRef = doc(db, "users", userId);
+    console.log(userRef);
     const newBet = {
-      userId,
+      userRef,
       betAmount,
       betType,
       timestamp: serverTimestamp(), // Firestore server timestamp,
@@ -41,7 +44,7 @@ export async function addBet(
 
     await addDoc(betsCollectionRef, newBet);
     console.log(
-      `Bet added: UserId: ${userId}, BetAmount: ${betAmount}, BetType: ${betType}, Timestamp: ${new Date().toISOString()}, spinId: ${spinId}`,
+      `Bet added: UserId: ${userRef}, BetAmount: ${betAmount}, BetType: ${betType}, Timestamp: ${new Date().toISOString()}, spinId: ${spinId}`,
     );
   } catch (error) {
     console.error("Error adding bet:", error);
@@ -51,24 +54,22 @@ export async function addBet(
 // Retrieve bets placed within the last minute
 export async function getRecentBets(winningColor: Color, spinId: number) {
   try {
-    const oneMinuteAgo = new Date(Date.now() - 60 * 1000); // Get timestamp from one minute ago
-    console.log(`Fetching bets placed after: ${oneMinuteAgo.toISOString()}`);
-
     const betsCollectionRef = collection(db, "wheel_bets");
     const q = query(
       betsCollectionRef,
       where("spinId", "==", spinId),
-      where("betType", "==", winningColor), // Only get bets placed after one minute ago
+      where("betType", "==", winningColor), // Filter by winning color
     );
 
     const betsSnapshot = await getDocs(q);
     const bets: DocumentData[] = [];
 
     betsSnapshot.forEach((doc) => {
-      bets.push({ id: doc.id, ...doc.data() });
+      const betData = doc.data();
+      // Push the bet data along with the user reference (userRef)
+      bets.push({ id: doc.id, ...betData });
     });
 
-    console.log(`Fetched ${bets.length} bets placed in the last minute.`);
     return bets;
   } catch (error) {
     console.error("Error fetching recent bets:", error);
@@ -81,7 +82,7 @@ export async function processBetsAfterSpin(spinResult: Color, spinId: number) {
   try {
     console.log(`Processing bets for spin result: ${spinResult}`);
 
-    const bets = await getRecentBets(spinResult, spinId); // Get bets placed in the last minute
+    const bets = await getRecentBets(spinResult, spinId); // Get bets for the winning color
 
     if (bets.length === 0) {
       console.log("No bets to process.");
@@ -89,17 +90,28 @@ export async function processBetsAfterSpin(spinResult: Color, spinId: number) {
     }
 
     for (const bet of bets) {
-      const { userId, betAmount, betType } = bet;
+      const { userRef, betAmount, betType } = bet;
       let winnings = 0;
 
       console.log(
-        `Processing bet: UserId: ${userId}, BetAmount: ${betAmount}, BetType: ${betType}`,
+        `Processing bet: UserRef: ${userRef.path}, BetAmount: ${betAmount}, BetType: ${betType}`,
       );
 
+      // Resolve the user reference to get the user data
+      const userSnapshot = await getDoc(userRef);
+      if (!userSnapshot.exists()) {
+        console.log(`User not found for bet: ${bet.id}`);
+        continue;
+      }
+
+      // const userData = userSnapshot.data();
+      const userId = userSnapshot.id; // Extract user ID
+
+      // Check if the bet matches the spin result
       if (betType === spinResult) {
         winnings = betAmount * getPayoutMultiplier(betType);
         console.log(`User ${userId} won: ${winnings}. Updating balance...`);
-        await incrementUserBalance(userId, winnings);
+        await incrementUserBalance(userId, winnings); // Update user's balance
       } else {
         console.log(`User ${userId} did not win. No balance update.`);
       }

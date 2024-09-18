@@ -18,9 +18,10 @@ const BetButton: React.FC<BetButtonProps> = ({
 }) => {
   return (
     <button
-      className={`flex h-16 w-full items-center justify-center rounded-md border-2 text-${color} border-${color} disabled:opacity-50`}
+      className={`flex h-16 w-full items-center justify-center rounded-md border-2 text-xl font-bold disabled:opacity-50`}
       onClick={() => onBetSelect(betType)}
       disabled={disabled}
+      style={{ color: color, borderColor: color }} // Use inline styles for dynamic color
     >
       {multiplier}
     </button>

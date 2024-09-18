@@ -77,3 +77,27 @@
     transparent 100%
   );
 }
+
+/* global.css */
+@keyframes spinAnimation {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.reel {
+  width: 60px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid black;
+  background-color: white;
+}
+
+.spin {
+  animation: spinAnimation 0.5s ease-in-out infinite;
+}

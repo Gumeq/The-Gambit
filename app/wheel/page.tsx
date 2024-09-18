@@ -17,6 +17,7 @@ const Page = () => {
   const [nextSpin, setNextSpin] = useState<number | null>(null);
 
   const { user, balance } = useAuth();
+  console.log(user);
 
   useEffect(() => {
     // Initialize Pusher
@@ -68,7 +69,7 @@ const Page = () => {
   };
 
   return (
-    <div className="mx-auto flex w-full flex-col items-center gap-16">
+    <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-16">
       <div className="grid w-full grid-cols-3 gap-16">
         <div className="">
           <h2 className="text-lg font-semibold text-foreground">
@@ -93,6 +94,7 @@ const Page = () => {
       <BetTypeButtons
         betAmount={betAmount}
         onBetSelect={handleBetTypeSelection}
+        nextSpinId={nextSpin || 0}
       />
     </div>
   );

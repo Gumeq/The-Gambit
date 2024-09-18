@@ -68,11 +68,16 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
       const timeDiff = nextTarget.getTime() - now.getTime();
       const secondsLeft = Math.floor((timeDiff % 60000) / 1000);
 
+      if (secondsLeft <= 0) {
+        setTimeLeft("00"); // Set the timer to 00 when it reaches zero
+        return; // Stop updating once the time reaches zero
+      }
+
       setTimeLeft(`${secondsLeft.toString().padStart(2, "0")}`);
     };
 
-    // Update every 10 milliseconds for smooth countdown
-    const intervalId = setInterval(updateTimeLeft, 10);
+    // Update every 100 milliseconds for smooth countdown
+    const intervalId = setInterval(updateTimeLeft, 100);
 
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, []);

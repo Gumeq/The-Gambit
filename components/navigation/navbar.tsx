@@ -1,8 +1,4 @@
 "use client";
-
-// import React from "react";
-// import { useAuth } from "../providers/auth-provider";
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,30 +7,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-// import { ModeToggle } from "../theme/ThemeSwitchButton";
-// import UserBalance from "../user/user-balance";
-
-// const Navbar = () => {
-//   const { user, loading } = useAuth();
-//   return (
-//     <div className="fixed left-0 top-0 z-50 flex h-16 w-screen items-center justify-between border-b bg-background px-8">
-//       <div className="text-lg font-bold">The Gambit</div>
-
-//       {/* Centered Chip Value */}
-//       <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 transform flex-row items-center gap-2 rounded-md border p-1 font-bold">
-//         <img src="/assets/images/chip.png" className="ml-2 h-4 w-4" alt="" />
-//         <UserBalance></UserBalance>
-//         <div className="h-full w-2"></div>
-//         <div className="rounded-md bg-primary px-4 py-1">Cashier</div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Navbar;
-
-// app/components/ClientComponent.jsx
-// This directive marks the component as a client component
 
 import React, { ReactNode } from "react";
 import { ModeToggle } from "../theme/ThemeSwitchButton";
@@ -47,7 +19,7 @@ interface NavbarProps {
 }
 
 const Navbar = ({ children }: NavbarProps) => {
-  const { user } = useAuth();
+  const { userData: user } = useAuth();
   return (
     <nav className="z-50">
       <div

@@ -2,7 +2,7 @@
 
 import { auth, googleProvider, db } from "../../../config/firebase";
 import { signInWithPopup } from "firebase/auth";
-import { setDoc, doc, getDoc } from "firebase/firestore"; // Added getDoc to retrieve the user document
+import { setDoc, doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import nookies from "nookies";
 
@@ -29,29 +29,27 @@ const SignIn = () => {
       // Fetch the user's existing document
       const userDocSnap = await getDoc(userDocRef);
 
-      // Check if the document exists and if it contains a balance
-      let balance = 10000; // Default balance for new users
-      let rank = 0;
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        balance = userData.balance ?? 0; // Use existing balance if available, otherwise default to 0
-        rank = userData.rank ?? 0;
-      }
-
-      // Store user data in Firestore, but preserve the existing balance
-      await setDoc(
-        userDocRef,
-        {
+      if (!userDocSnap.exists()) {
+        // If the user document does not exist, create it
+        await setDoc(userDocRef, {
           id: user.uid,
           displayName: user.displayName,
           email: user.email,
           photoURL: user.photoURL,
           lastLogin: new Date(),
-          balance: balance, // Keep the existing balance or set to 0 for new users
-          rank: rank,
-        },
-        { merge: true },
-      ); // Use merge option to update fields without overwriting the entire document
+          balance: 10000, // Default balance for new users
+          rank: 0, // Default rank for new users
+        });
+      } else {
+        // If user exists, just update the last login timestamp
+        await setDoc(
+          userDocRef,
+          {
+            lastLogin: new Date(),
+          },
+          { merge: true },
+        );
+      }
 
       // Redirect to dashboard after successful login
       router.push("/");
