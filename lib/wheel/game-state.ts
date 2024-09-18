@@ -14,7 +14,6 @@ import {
 import { db } from "@/config/firebase"; // Firebase config
 import { incrementUserBalance } from "@/utils/firebase/user-data";
 import { Color } from "@/utils/firebase/wheel-bets";
-import { useAuth } from "@/components/providers/auth-provider";
 
 export type Bet = {
   userId: string;

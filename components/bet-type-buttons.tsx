@@ -129,6 +129,7 @@ const BetTypeButtons = ({
           <ul className="flex w-full flex-col gap-2">
             {blackBets.map((item, index) => (
               <UserBetCardWheel
+                key={index}
                 user={item.user}
                 bet={item.bet}
               ></UserBetCardWheel>
@@ -148,6 +149,7 @@ const BetTypeButtons = ({
           <ul className="flex w-full flex-col gap-2">
             {redBets.map((item, index) => (
               <UserBetCardWheel
+                key={index}
                 user={item.user}
                 bet={item.bet}
               ></UserBetCardWheel>
@@ -168,6 +170,7 @@ const BetTypeButtons = ({
           <ul className="flex w-full flex-col gap-2">
             {blueBets.map((item, index) => (
               <UserBetCardWheel
+                key={index}
                 user={item.user}
                 bet={item.bet}
               ></UserBetCardWheel>
@@ -187,6 +190,7 @@ const BetTypeButtons = ({
           <ul className="flex w-full flex-col gap-2">
             {goldBets.map((item, index) => (
               <UserBetCardWheel
+                key={index}
                 user={item.user}
                 bet={item.bet}
               ></UserBetCardWheel>
