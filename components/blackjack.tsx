@@ -201,7 +201,7 @@ const BlackjackGame: React.FC = () => {
   // Dealer's turn
   const dealerTurn = (playerHands: PlayerHand[]) => {
     let dealerTotal = calculateHandValue(dealerHand);
-    let newDealerHand = [...dealerHand];
+    const newDealerHand = [...dealerHand];
 
     while (dealerTotal < 17) {
       const newCard = deck.pop();
@@ -277,7 +277,7 @@ const BlackjackGame: React.FC = () => {
 
       {/* Dealer's Hand */}
       <div className="mb-4">
-        <h2 className="text-xl">Dealer's Hand</h2>
+        <h2 className="text-xl">Dealer Hand</h2>
         <div className="flex space-x-2">
           {dealerHand.map((card, index) => {
             if (index === 1 && !gameOver) {

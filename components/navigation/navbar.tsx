@@ -29,9 +29,8 @@ function hexToRgba(hex: string, opacity: number) {
 
 const Navbar = ({ children }: NavbarProps) => {
   const { userData: user } = useAuth();
-  const { level, progressPercent } = getLevelAndProgress(user?.exp);
+  const { level } = getLevelAndProgress(user?.exp);
   const levelColor = getLevelColor(level);
-  const tailwindLevelColor = `border-[levelColor] `;
   const backgroundColorWithOpacity = hexToRgba(levelColor, 0.5);
   return (
     <nav className="z-50">
