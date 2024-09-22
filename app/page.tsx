@@ -66,9 +66,9 @@ const page = () => {
         >
           <h2 className="z-10 w-1/2 text-4xl font-bold">WHEEL</h2>
           <img
-            src="/assets/images/roulette.png"
+            src="/assets/images/wheel.png"
             alt=""
-            className="absolute -bottom-12 -right-12 h-64 w-64"
+            className="absolute -bottom-16 -right-16 h-64 w-64 scale-125"
           />
         </Link>
         <Link
@@ -79,7 +79,7 @@ const page = () => {
           <img
             src="/assets/images/dice.png"
             alt=""
-            className="absolute -bottom-12 -right-12 h-64 w-64"
+            className="absolute -bottom-16 -right-16 h-64 w-64 scale-125"
           />
         </Link>
         <Link
@@ -88,9 +88,9 @@ const page = () => {
         >
           <h2 className="z-10 w-1/2 text-4xl font-bold">POKER</h2>
           <img
-            src="/assets/images/cards.png"
+            src="/assets/images/chip_stack.png"
             alt=""
-            className="absolute -bottom-12 -right-12 h-64 w-64"
+            className="absolute -bottom-16 -right-16 h-64 w-64 scale-125"
           />
         </Link>
         <Link
@@ -99,9 +99,9 @@ const page = () => {
         >
           <h2 className="z-10 w-1/2 text-4xl font-bold">BLACKJACK</h2>
           <img
-            src="/assets/images/chip_stack.png"
+            src="/assets/images/cards.png"
             alt=""
-            className="absolute -bottom-12 -right-12 h-64 w-64"
+            className="absolute -bottom-16 -right-16 h-64 w-64 scale-125"
           />
         </Link>
         <Link
@@ -112,7 +112,7 @@ const page = () => {
           <img
             src="/assets/images/bomb.png"
             alt=""
-            className="absolute -bottom-12 -right-12 h-64 w-64"
+            className="absolute -bottom-16 -right-16 h-64 w-64 scale-125"
           />
         </Link>
         <Link
@@ -121,9 +121,9 @@ const page = () => {
         >
           <h2 className="z-10 w-1/2 text-4xl font-bold">TOWER</h2>
           <img
-            src="/assets/images/roulette.png"
+            src="/assets/images/tower.png"
             alt=""
-            className="absolute -bottom-12 -right-12 h-64 w-64"
+            className="absolute -bottom-16 -right-16 h-64 w-64 scale-125"
           />
         </Link>
       </div>

@@ -22,6 +22,8 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
   const [timeLeft, setTimeLeft] = useState("00:00"); // Timer state
   const [spinning, setSpinning] = useState(false); // State to track if the wheel is spinning
 
+  const [visibleSegments, setVisibleSegments] = useState<number[]>([]); // Track visible segments
+
   const numbers = useMemo(() => Array.from({ length: 53 }, (_, i) => i), []);
   const totalNumbers = numbers.length;
 
@@ -34,8 +36,13 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
       const pathData = describeArc(cx, cy, radius, startAngle, endAngle);
       const fillColor = getNumberColorHex(number);
 
+      const isVisible = visibleSegments.includes(i); // Check if the segment is visible
+
       return (
-        <g key={number}>
+        <g
+          key={number}
+          className={`transition-opacity duration-500 ${isVisible ? "opacity-100" : "opacity-0"}`} // Fade-in effect
+        >
           <path
             d={pathData}
             fill={fillColor}
@@ -45,7 +52,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
         </g>
       );
     });
-  }, [numbers, cx, cy, radius, totalNumbers]);
+  }, [numbers, cx, cy, radius, totalNumbers, visibleSegments]);
 
   useEffect(() => {
     const updateTimeLeft = () => {
@@ -119,24 +126,23 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
     }
   }, [targetNumber, spinStartTime, spinDuration, totalNumbers]);
 
+  // Use an effect to progressively show the segments with a delay
+  useEffect(() => {
+    setVisibleSegments([]); // Reset visible segments
+
+    numbers.forEach((_, i) => {
+      setTimeout(() => {
+        setVisibleSegments((prev) => [...prev, i]); // Add one segment at a time
+      }, i * 20); // 0.1 second delay between each segment
+    });
+  }, [numbers]);
+
   return (
     <div
       className="relative flex items-center justify-center"
       style={{ width: radius * 2, height: radius * 2 }}
     >
-      {/* Rotating Wheel Container */}
-      <div className="relative rotate-90">
-        <svg
-          ref={wheelRef}
-          width={radius * 2}
-          height={radius * 2}
-          style={{ transformOrigin: "50% 50%" }}
-        >
-          {segments}
-        </svg>
-      </div>
-
-      {/* Non-rotating central circle */}
+      {/* Non-rotating central circle rendered first */}
       <svg
         width={radius * 2}
         height={radius * 2}
@@ -145,6 +151,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
           top: 0,
           left: 0,
           pointerEvents: "none", // Prevent interaction with the center
+          zIndex: 20,
         }}
       >
         <circle
@@ -169,6 +176,18 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
         )}
       </svg>
 
+      {/* Rotating Wheel Container with delayed segment rendering */}
+      <div className="relative rotate-90">
+        <svg
+          ref={wheelRef}
+          width={radius * 2}
+          height={radius * 2}
+          style={{ transformOrigin: "50% 50%" }}
+        >
+          {segments}
+        </svg>
+      </div>
+
       {/* Pointer adjusted to bottom and facing down */}
       <div
         className="absolute"
@@ -176,6 +195,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
           bottom: 35,
           left: "50%",
           transform: "translate(-50%, 50%) rotate(0deg)",
+          zIndex: 20,
         }}
       >
         <div

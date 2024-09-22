@@ -1,5 +1,6 @@
 import React from "react";
 import { DocumentData } from "firebase/firestore";
+import { getLevelAndProgress } from "@/utils/constants";
 
 type UserBetCardProps = {
   user: DocumentData;
@@ -7,13 +8,14 @@ type UserBetCardProps = {
 };
 
 const UserBetCardWheel = ({ user, bet }: UserBetCardProps) => {
+  const { level } = getLevelAndProgress(user.exp);
   return (
     <div className="flex w-full flex-row justify-between rounded-md bg-foreground/5 p-2">
       <div className="flex flex-row gap-2">
         <img src={user.photoURL} alt="" className="h-16 w-16 rounded-md" />
         <div className="flex flex-col gap-1">
           <p className="text-lg font-semibold">{user.displayName}</p>
-          <p>Rank: {user.exp}</p>
+          <p>Rank: {level}</p>
         </div>
       </div>
       <div className="flex h-full flex-row items-center justify-center gap-2 p-2 text-xl font-semibold">

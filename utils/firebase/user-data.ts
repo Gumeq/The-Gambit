@@ -36,20 +36,28 @@ export const updateUserBalance = async (userId: string, newBalance: number) => {
   }
 };
 
-export async function incrementUserBalance(userId: string, winnings: number) {
+export async function incrementUserBalance(userId: string, amount: number) {
   const userRef = doc(db, "users", userId);
 
   // Increment the user's balance by the winnings
   await updateDoc(userRef, {
-    balance: increment(winnings),
+    balance: increment(amount),
   });
 }
 
-export async function decrementUserBalance(userId: string, winnings: number) {
+export async function decrementUserBalance(userId: string, amount: number) {
   const userRef = doc(db, "users", userId);
 
   // Increment the user's balance by the winnings
   await updateDoc(userRef, {
-    balance: increment(-winnings),
+    balance: increment(-amount),
+  });
+}
+
+export async function incrementUserExp(userId: string, amount: number) {
+  const userRef = doc(db, "users", userId);
+
+  await updateDoc(userRef, {
+    exp: increment(amount),
   });
 }

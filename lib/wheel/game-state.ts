@@ -12,8 +12,12 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "@/config/firebase"; // Firebase config
-import { incrementUserBalance } from "@/utils/firebase/user-data";
+import {
+  incrementUserBalance,
+  incrementUserExp,
+} from "@/utils/firebase/user-data";
 import { Color } from "@/utils/firebase/wheel-bets";
+import { EXP_MULTIPLIERS } from "@/utils/constants";
 
 export type Bet = {
   userId: string;
@@ -42,6 +46,7 @@ export async function addBet(
     };
 
     await addDoc(betsCollectionRef, newBet);
+    await incrementUserExp(userId, betAmount * EXP_MULTIPLIERS["WHEEL"]);
     console.log(
       `Bet added: UserId: ${userRef}, BetAmount: ${betAmount}, BetType: ${betType}, Timestamp: ${new Date().toISOString()}, spinId: ${spinId}`,
     );
