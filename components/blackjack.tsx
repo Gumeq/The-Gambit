@@ -44,9 +44,22 @@ const BlackjackGame: React.FC = () => {
     startGame();
   }, []);
 
+  // Function to draw a card and update the deck state
+  const drawCard = (): Card | null => {
+    if (deck.length === 0) {
+      console.error("Deck is empty!");
+      return null;
+    }
+    const newDeck = [...deck];
+    const card = newDeck.pop()!;
+    setDeck(newDeck);
+    return card;
+  };
+
   const startGame = () => {
-    const newDeck = createDeck();
+    let newDeck = createDeck();
     shuffleDeck(newDeck);
+
     const initialPlayerHand = [newDeck.pop()!, newDeck.pop()!];
     const initialDealerHand = [newDeck.pop()!, newDeck.pop()!];
 
@@ -100,17 +113,18 @@ const BlackjackGame: React.FC = () => {
   // Player actions
   const playerHit = (handIndex: number) => {
     if (!gameOver) {
-      const newCard = deck.pop();
+      const newCard = drawCard();
       if (newCard) {
         setPlayerHands((prevHands) => {
           const hands = [...prevHands];
-          const hand = hands[handIndex];
+          const hand = { ...hands[handIndex] };
           if (!hand.isStand && !hand.isBusted) {
-            hand.cards.push(newCard);
+            hand.cards = [...hand.cards, newCard];
             const handTotal = calculateHandValue(hand.cards);
             if (handTotal > 21) {
               hand.isBusted = true;
             }
+            hands[handIndex] = hand;
           }
           // Check if all hands are done
           if (hands.every((h) => h.isStand || h.isBusted)) {
@@ -125,7 +139,7 @@ const BlackjackGame: React.FC = () => {
   const playerStand = (handIndex: number) => {
     setPlayerHands((prevHands) => {
       const hands = [...prevHands];
-      hands[handIndex].isStand = true;
+      hands[handIndex] = { ...hands[handIndex], isStand: true };
 
       // Check if all hands are done
       if (hands.every((h) => h.isStand || h.isBusted)) {
@@ -138,17 +152,18 @@ const BlackjackGame: React.FC = () => {
   const playerDoubleDown = (handIndex: number) => {
     setPlayerHands((prevHands) => {
       const hands = [...prevHands];
-      const hand = hands[handIndex];
+      const hand = { ...hands[handIndex] };
       if (!hand.isDoubleDown && hand.cards.length === 2) {
         hand.isDoubleDown = true;
-        const newCard = deck.pop();
+        const newCard = drawCard();
         if (newCard) {
-          hand.cards.push(newCard);
+          hand.cards = [...hand.cards, newCard];
           const handTotal = calculateHandValue(hand.cards);
           if (handTotal > 21) {
             hand.isBusted = true;
           }
           hand.isStand = true;
+          hands[handIndex] = hand;
         }
         // Check if all hands are done
         if (hands.every((h) => h.isStand || h.isBusted)) {
@@ -174,25 +189,27 @@ const BlackjackGame: React.FC = () => {
         const firstCard = hand.cards[0];
         const secondCard = hand.cards[1];
 
-        const newFirstHand: PlayerHand = {
-          cards: [firstCard, deck.pop()!],
-          isStand: false,
-          isBusted: false,
-          isDoubleDown: false,
-        };
-        const newSecondHand: PlayerHand = {
-          cards: [secondCard, deck.pop()!],
-          isStand: false,
-          isBusted: false,
-          isDoubleDown: false,
-        };
+        const firstNewCard = drawCard();
+        const secondNewCard = drawCard();
 
-        // Insert the two new hands at the same index
-        hands.splice(handIndex, 0, newSecondHand);
-        hands.splice(handIndex, 0, newFirstHand);
+        if (firstNewCard && secondNewCard) {
+          const newFirstHand: PlayerHand = {
+            cards: [firstCard, firstNewCard],
+            isStand: false,
+            isBusted: false,
+            isDoubleDown: false,
+          };
+          const newSecondHand: PlayerHand = {
+            cards: [secondCard, secondNewCard],
+            isStand: false,
+            isBusted: false,
+            isDoubleDown: false,
+          };
 
-        // Check for additional splits recursively
-        return hands;
+          // Insert the two new hands at the same index
+          hands.splice(handIndex, 0, newSecondHand);
+          hands.splice(handIndex, 0, newFirstHand);
+        }
       }
       return hands;
     });
@@ -201,16 +218,18 @@ const BlackjackGame: React.FC = () => {
   // Dealer's turn
   const dealerTurn = (playerHands: PlayerHand[]) => {
     let dealerTotal = calculateHandValue(dealerHand);
-    const newDealerHand = [...dealerHand];
+    let newDealerHand = [...dealerHand];
+    let newDeck = [...deck];
 
     while (dealerTotal < 17) {
-      const newCard = deck.pop();
+      const newCard = newDeck.pop();
       if (newCard) {
-        newDealerHand.push(newCard);
+        newDealerHand = [...newDealerHand, newCard];
         dealerTotal = calculateHandValue(newDealerHand);
       }
     }
 
+    setDeck(newDeck);
     setDealerHand(newDealerHand);
     checkWinners(playerHands, newDealerHand);
   };
@@ -280,7 +299,7 @@ const BlackjackGame: React.FC = () => {
         <h2 className="text-xl">Dealer Hand</h2>
         <div className="flex space-x-2">
           {dealerHand.map((card, index) => {
-            if (index === 1 && !gameOver) {
+            if (index === 1 && !gameOver && !isInsuranceOffered) {
               return <CardDisplayFaceDown key={index} />;
             }
             return <CardDisplay card={card} key={index} />;
@@ -373,8 +392,8 @@ const BlackjackGame: React.FC = () => {
                     hand.result === "Win"
                       ? "text-green-500"
                       : hand.result === "Lose"
-                        ? "text-red-500"
-                        : ""
+                      ? "text-red-500"
+                      : ""
                   }
                 >
                   {hand.result}
