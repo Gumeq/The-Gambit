@@ -125,17 +125,19 @@ const BetTypeButtons = ({
           onBetSelect={onBetSelect}
           disabled={betAmount <= 0} // Disable if betAmount is 0
         />
-        {blackBets.length > 0 && (
-          <ul className="flex w-full flex-col gap-2">
-            {blackBets.map((item, index) => (
-              <UserBetCardWheel
-                key={index}
-                user={item.user}
-                bet={item.bet}
-              ></UserBetCardWheel>
-            ))}
-          </ul>
-        )}
+        <ul className="no-scrollbar flex h-64 w-full flex-col gap-2 overflow-y-auto">
+          {blackBets.length > 0 && (
+            <>
+              {blackBets.map((item, index) => (
+                <UserBetCardWheel
+                  key={index}
+                  user={item.user}
+                  bet={item.bet}
+                ></UserBetCardWheel>
+              ))}
+            </>
+          )}
+        </ul>
       </div>
       <div className="flex w-full flex-col gap-2 rounded-md">
         <BetButton
@@ -145,17 +147,19 @@ const BetTypeButtons = ({
           onBetSelect={onBetSelect}
           disabled={betAmount <= 0}
         />
-        {redBets.length > 0 && (
-          <ul className="flex w-full flex-col gap-2">
-            {redBets.map((item, index) => (
-              <UserBetCardWheel
-                key={index}
-                user={item.user}
-                bet={item.bet}
-              ></UserBetCardWheel>
-            ))}
-          </ul>
-        )}
+        <ul className="no-scrollbar flex h-64 w-full flex-col gap-2 overflow-y-auto">
+          {redBets.length > 0 && (
+            <>
+              {redBets.map((item, index) => (
+                <UserBetCardWheel
+                  key={index}
+                  user={item.user}
+                  bet={item.bet}
+                ></UserBetCardWheel>
+              ))}
+            </>
+          )}
+        </ul>
       </div>
 
       <div className="flex w-full flex-col gap-2 rounded-md">
@@ -166,17 +170,19 @@ const BetTypeButtons = ({
           onBetSelect={onBetSelect}
           disabled={betAmount <= 0}
         />
-        {blueBets.length > 0 && (
-          <ul className="flex w-full flex-col gap-2">
-            {blueBets.map((item, index) => (
-              <UserBetCardWheel
-                key={index}
-                user={item.user}
-                bet={item.bet}
-              ></UserBetCardWheel>
-            ))}
-          </ul>
-        )}
+        <ul className="no-scrollbar flex h-64 w-full flex-col gap-2 overflow-y-auto">
+          {blueBets.length > 0 && (
+            <>
+              {blueBets.map((item, index) => (
+                <UserBetCardWheel
+                  key={index}
+                  user={item.user}
+                  bet={item.bet}
+                ></UserBetCardWheel>
+              ))}
+            </>
+          )}
+        </ul>
       </div>
       <div className="flex w-full flex-col gap-2 rounded-md">
         <BetButton
@@ -186,17 +192,19 @@ const BetTypeButtons = ({
           onBetSelect={onBetSelect}
           disabled={betAmount <= 0}
         />
-        {goldBets.length > 0 && (
-          <ul className="flex w-full flex-col gap-2">
-            {goldBets.map((item, index) => (
-              <UserBetCardWheel
-                key={index}
-                user={item.user}
-                bet={item.bet}
-              ></UserBetCardWheel>
-            ))}
-          </ul>
-        )}
+        <ul className="no-scrollbar flex h-64 w-full flex-col gap-2 overflow-y-auto">
+          {goldBets.length > 0 && (
+            <>
+              {goldBets.map((item, index) => (
+                <UserBetCardWheel
+                  key={index}
+                  user={item.user}
+                  bet={item.bet}
+                ></UserBetCardWheel>
+              ))}
+            </>
+          )}
+        </ul>
       </div>
     </div>
   );

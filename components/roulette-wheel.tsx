@@ -46,7 +46,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
           <path
             d={pathData}
             fill={fillColor}
-            stroke="hsl(var(--background))"
+            stroke="#161616"
             strokeWidth={8}
           />
         </g>
@@ -154,12 +154,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({
           zIndex: 20,
         }}
       >
-        <circle
-          cx={cx}
-          cy={cy}
-          r={radius * 0.95}
-          fill="hsl(var(--background))"
-        />
+        <circle cx={cx} cy={cy} r={radius * 0.95} fill="#161616" />
         {/* Timer Text in the Center, hidden when spinning */}
         {!spinning && (
           <text

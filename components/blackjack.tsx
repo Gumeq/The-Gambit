@@ -57,7 +57,7 @@ const BlackjackGame: React.FC = () => {
   };
 
   const startGame = () => {
-    let newDeck = createDeck();
+    const newDeck = createDeck();
     shuffleDeck(newDeck);
 
     const initialPlayerHand = [newDeck.pop()!, newDeck.pop()!];
@@ -219,7 +219,7 @@ const BlackjackGame: React.FC = () => {
   const dealerTurn = (playerHands: PlayerHand[]) => {
     let dealerTotal = calculateHandValue(dealerHand);
     let newDealerHand = [...dealerHand];
-    let newDeck = [...deck];
+    const newDeck = [...deck];
 
     while (dealerTotal < 17) {
       const newCard = newDeck.pop();
@@ -392,8 +392,8 @@ const BlackjackGame: React.FC = () => {
                     hand.result === "Win"
                       ? "text-green-500"
                       : hand.result === "Lose"
-                      ? "text-red-500"
-                      : ""
+                        ? "text-red-500"
+                        : ""
                   }
                 >
                   {hand.result}

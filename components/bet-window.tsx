@@ -12,6 +12,7 @@ const BetWindow = ({
   setBetAmount: (amount: number) => void;
 }) => {
   const { balance } = useAuth();
+
   // Function to adjust the bet amount
   const handleAmountChange = (increment: number) => {
     setBetAmount(betAmount + increment);
@@ -26,9 +27,16 @@ const BetWindow = ({
   };
 
   const handleMaxBet = () => {
-    // Assuming you want to set some kind of max limit, e.g., balance (user balance needs to be fetched)
     if (balance) {
       setBetAmount(balance);
+    }
+  };
+
+  // Function to handle direct input of bet amount
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newBet = parseInt(e.target.value, 10);
+    if (!isNaN(newBet)) {
+      setBetAmount(newBet);
     }
   };
 
@@ -43,10 +51,14 @@ const BetWindow = ({
         <UserBalance />
         <div className="h-full w-2"></div>
       </div>
-
-      {/* Display the current bet amount */}
-      <div className="w-full gap-2 rounded-md border p-2">{betAmount}</div>
-
+      {/* Input to modify the bet amount directly */}
+      <input
+        type="number"
+        className="w-full rounded-md border p-2"
+        value={betAmount}
+        onChange={handleInputChange}
+        min={0}
+      />
       {/* Buttons to modify the bet */}
       <div className="flex w-full flex-row gap-2">
         <div

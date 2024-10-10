@@ -3,7 +3,7 @@
 import { createContext, useEffect, useState, useContext } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth, db } from "@/config/firebase"; // Ensure you have Firestore initialized in your firebase config
-import { doc, DocumentData, getDoc, onSnapshot } from "firebase/firestore"; // Import Firestore methods
+import { doc, DocumentData, onSnapshot } from "firebase/firestore"; // Import Firestore methods
 
 interface AuthContextProps {
   user: User | null;
@@ -16,50 +16,40 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userData, setUserData] = useState<DocumentData | null>(null); // New state to store Firestore user data
+  const [userData, setUserData] = useState<DocumentData | null>(null); // State to store Firestore user data
   const [balance, setBalance] = useState<number | null>(null); // Real-time balance state
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Listen for auth state changes
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser); // Set the Firebase user
 
       if (firebaseUser) {
-        try {
-          // Fetch user data from Firestore based on UID
-          const userDocRef = doc(db, "users", firebaseUser.uid); // Assuming user data is stored under "users" collection
-          const userDocSnap = await getDoc(userDocRef);
+        // Reference to the user's document in Firestore
+        const userDocRef = doc(db, "users", firebaseUser.uid); // Assuming user data is stored under "users" collection
 
-          if (userDocSnap.exists()) {
-            setUserData(userDocSnap.data()); // Set the user data from Firestore
+        // Set up real-time listener for the entire user document
+        const unsubscribeUserDoc = onSnapshot(userDocRef, (docSnapshot) => {
+          if (docSnapshot.exists()) {
+            const userData = docSnapshot.data(); // Get the entire user data
+            setUserData(userData); // Update user data in real-time
+
+            // Update balance separately if it exists in the document
+            if (userData.balance !== undefined) {
+              setBalance(userData.balance); // Set real-time balance
+            } else {
+              setBalance(null); // If no balance field is present, set to null
+            }
           } else {
             console.error("No user data found for this UID:", firebaseUser.uid);
             setUserData(null);
+            setBalance(null);
           }
+        });
 
-          // Set up real-time listener for balance field
-          const unsubscribeBalance = onSnapshot(userDocRef, (docSnapshot) => {
-            if (docSnapshot.exists()) {
-              const data = docSnapshot.data();
-              if (data?.balance !== undefined) {
-                setBalance(data.balance); // Update balance in real-time
-              } else {
-                setBalance(null); // Set to null if no balance field
-              }
-            } else {
-              console.log("User document does not exist");
-              setBalance(null); // Clear balance if no document exists
-            }
-          });
-
-          // Cleanup balance listener on unmount
-          return () => unsubscribeBalance();
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-          setUserData(null);
-          setBalance(null);
-        }
+        // Cleanup user document listener on unmount
+        return () => unsubscribeUserDoc();
       } else {
         setUserData(null); // Clear userData if the user logs out
         setBalance(null); // Clear balance if the user logs out

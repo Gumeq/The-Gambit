@@ -69,13 +69,9 @@ const Page = () => {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-16">
+    <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-16">
       <div className="grid w-full grid-cols-3 gap-16">
         <div className="">
-          <h2 className="text-lg font-semibold text-foreground">
-            PREVIOUS ROLLS
-          </h2>
-          <div className="my-2 h-[1px] w-full bg-foreground/10"></div>
           <BetWindow betAmount={betAmount} setBetAmount={setBetAmount} />
         </div>
         <div className="flex items-center justify-center">
@@ -84,11 +80,6 @@ const Page = () => {
             spinStartTime={spinStartTime ?? Date.now()}
             spinDuration={spinDuration}
           />
-        </div>
-
-        <div className="">
-          <h2 className="text-lg font-semibold text-foreground">LAST 100</h2>
-          <div className="my-2 h-[1px] w-full bg-foreground/10"></div>
         </div>
       </div>
       <BetTypeButtons

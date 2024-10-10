@@ -2,18 +2,7 @@ export const EXP_MULTIPLIERS = {
   WHEEL: 0.25,
 };
 
-export const BASE_EXP = 10000; // First level requires 10,000 EXP
-export const EXP_MULTIPLIER = 1.5; // Multiplier for level scaling
-
-/**
- * Function to calculate the required experience for a specific level.
- * @param level - The current level of the user.
- * @returns Required experience to reach the next level.
- */
-export const getExpForLevel = (level: number): number => {
-  if (level === 1) return BASE_EXP; // Level 1 requires 10,000 EXP
-  return BASE_EXP * Math.pow(EXP_MULTIPLIER, level - 1); // Scale for level 2 and beyond
-};
+export const BASE_EXP = 1000; // Each level requires 10,000 EXP
 
 /**
  * Function to calculate the user's current level and progress percentage to the next level.
@@ -21,54 +10,67 @@ export const getExpForLevel = (level: number): number => {
  * @returns An object containing the user's level and progress percentage to the next level.
  */
 export const getLevelAndProgress = (currentXP: number) => {
-  let level = 1;
-  let expForNextLevel = getExpForLevel(level);
-
-  // Determine the level based on the XP
-  while (currentXP >= expForNextLevel) {
-    level += 1;
-    currentXP -= expForNextLevel; // Deduct exp for each level
-    expForNextLevel = getExpForLevel(level); // Calculate required exp for the next level
+  // Ensure currentXP is a valid number, default to 0 if it's not
+  if (isNaN(currentXP) || currentXP < 0) {
+    currentXP = 0;
   }
 
-  // Calculate the progress percentage to the next level
-  const progressPercent = (currentXP / expForNextLevel) * 100;
+  const level = Math.floor(currentXP / BASE_EXP); // Calculate the level directly
+  const expForNextLevel = BASE_EXP; // Every level requires the same amount of EXP
+  const progressPercent = ((currentXP % BASE_EXP) / expForNextLevel) * 100; // Calculate progress to the next level
+
+  console.log("Level:", level + 1); // Log the level, with adjustment for 1-based levels
 
   return {
-    level,
+    level: level + 1, // Levels start at 1, not 0
     progressPercent,
   };
 };
 
-export function getLevelColor(level: number) {
-  // Define the array of colors for the 15 levels
-  const colors = [
-    "#D4EFDF", // Level 1
-    "#A9DFBF", // Level 2
-    "#7DCEA0", // Level 3
-    "#52BE80", // Level 4
-    "#27AE60", // Level 5
-    "#F7DC6F", // Level 6
-    "#F4D03F", // Level 7
-    "#F39C12", // Level 8
-    "#E67E22", // Level 9
-    "#D35400", // Level 10
-    "#F1948A", // Level 11
-    "#EC7063", // Level 12
-    "#E74C3C", // Level 13
-    "#C0392B", // Level 14
-    "#922B21", // Level 15
+// Helper function to convert HSL to RGB
+export function hslToRgb(h: number, s: number, l: number) {
+  s /= 100;
+  l /= 100;
+
+  const k = (n: number) => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) =>
+    l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+
+  return [
+    Math.round(f(0) * 255),
+    Math.round(f(8) * 255),
+    Math.round(f(4) * 255),
   ];
-
-  // Ensure the level is within the bounds of the array
-  if (level < 1 || level > 15) {
-    return "Invalid level";
-  }
-
-  // Return the corresponding color
-  return colors[level - 1];
 }
 
+// Helper function to convert RGB to hex
+export function rgbToHex(r: number, g: number, b: number) {
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+}
+
+export function hexToRgba(hex: string, opacity: number) {
+  const bigint = parseInt(hex.slice(1), 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
+// Main function to generate level color in hex
+export function getLevelColor(level: number) {
+  // Use the level to calculate a hue value
+  const hue = (level * 30) % 360;
+  const saturation = 70; // Fixed saturation
+  const lightness = 50; // Fixed lightness
+
+  // Convert HSL to RGB
+  const [r, g, b] = hslToRgb(hue, saturation, lightness);
+
+  // Convert RGB to hex and return
+  return rgbToHex(r, g, b);
+}
 // src/constants.ts
 export const SUITS = ["hearts", "diamonds", "clubs", "spades"];
 export const VALUES = [

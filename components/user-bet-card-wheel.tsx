@@ -1,6 +1,6 @@
 import React from "react";
 import { DocumentData } from "firebase/firestore";
-import { getLevelAndProgress } from "@/utils/constants";
+import LevelBadgeSmall from "./level-badge-small";
 
 type UserBetCardProps = {
   user: DocumentData;
@@ -8,17 +8,13 @@ type UserBetCardProps = {
 };
 
 const UserBetCardWheel = ({ user, bet }: UserBetCardProps) => {
-  const { level } = getLevelAndProgress(user.exp);
   return (
     <div className="flex w-full flex-row justify-between rounded-md bg-foreground/5 p-2">
-      <div className="flex flex-row gap-2">
-        <img src={user.photoURL} alt="" className="h-16 w-16 rounded-md" />
-        <div className="flex flex-col gap-1">
-          <p className="text-lg font-semibold">{user.displayName}</p>
-          <p>Rank: {level}</p>
-        </div>
+      <div className="flex flex-row items-center gap-2">
+        <LevelBadgeSmall exp={user.exp}></LevelBadgeSmall>
+        <p>{user.displayName}</p>
       </div>
-      <div className="flex h-full flex-row items-center justify-center gap-2 p-2 text-xl font-semibold">
+      <div className="flex flex-row items-center gap-2">
         <img src="/assets/images/chip.png" className="ml-2 h-4 w-4" alt="" />
         <p>{bet.betAmount}</p>
       </div>
