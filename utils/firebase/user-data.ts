@@ -1,6 +1,12 @@
 // firebaseUtils.ts
 import { db } from "@/config/firebase";
-import { doc, getDoc, increment, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  increment,
+  Timestamp,
+  updateDoc,
+} from "firebase/firestore";
 
 // Fetch user data from Firestore based on userId
 export const fetchUserData = async (userId: string) => {
@@ -60,4 +66,49 @@ export async function incrementUserExp(userId: string, amount: number) {
   await updateDoc(userRef, {
     exp: increment(amount),
   });
+}
+
+export async function isEligibleForDailyBonus(userId: string) {
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+  const now = Timestamp.now();
+
+  if (!userSnap.exists()) return true; // No record means eligible
+
+  const lastClaimed = userSnap.data().lastDailyBonusClaimed;
+  if (!lastClaimed) return true;
+
+  const hoursSinceLastClaim = (now.seconds - lastClaimed.seconds) / 3600;
+  return hoursSinceLastClaim >= 24;
+}
+
+export async function isEligibleForWeeklyBonus(userId: string) {
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+  const now = Timestamp.now();
+
+  if (!userSnap.exists()) return true; // No record means eligible
+
+  const lastClaimed = userSnap.data().lastWeeklyBonusClaimed;
+  if (!lastClaimed) return true;
+
+  const daysSinceLastClaim = (now.seconds - lastClaimed.seconds) / (3600 * 24);
+  return daysSinceLastClaim >= 7;
+}
+
+export async function giveBonusToUser(
+  userId: string,
+  amount: number,
+  bonusType: "daily" | "weekly" | null = null,
+): Promise<void> {
+  const userRef = doc(db, "users", userId);
+  const updateData: Record<string, any> = {
+    balance: increment(amount),
+  };
+  if (bonusType === "daily") {
+    updateData.lastDailyBonusClaimed = Timestamp.now();
+  } else if (bonusType === "weekly") {
+    updateData.lastWeeklyBonusClaimed = Timestamp.now();
+  }
+  await updateDoc(userRef, updateData);
 }

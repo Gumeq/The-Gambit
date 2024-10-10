@@ -2,7 +2,7 @@
 
 import { auth, googleProvider, db } from "../../../config/firebase";
 import { signInWithPopup } from "firebase/auth";
-import { setDoc, doc, getDoc } from "firebase/firestore";
+import { setDoc, doc, getDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import nookies from "nookies";
 
@@ -36,16 +36,19 @@ const SignIn = () => {
           displayName: user.displayName,
           email: user.email,
           photoURL: user.photoURL,
-          lastLogin: new Date(),
+          lastLogin: serverTimestamp(),
           balance: 10000, // Default balance for new users
-          rank: 0, // Default rank for new users
+          exp: 0, // Default exp for new users
+          level: 0,
+          lastDailyBonusClaimed: null,
+          lastWeeklyBonusClaimed: null,
         });
       } else {
         // If user exists, just update the last login timestamp
         await setDoc(
           userDocRef,
           {
-            lastLogin: new Date(),
+            lastLogin: serverTimestamp(),
           },
           { merge: true },
         );
@@ -59,12 +62,12 @@ const SignIn = () => {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-xs rounded-lg bg-white p-8 shadow-md">
+    <div className="flex h-screen items-center justify-center">
+      <div className="w-full max-w-xs rounded-lg p-8 shadow-md">
         <h1 className="mb-4 text-xl font-bold">Sign In</h1>
         <button
           onClick={handleGoogleSignIn}
-          className="w-full rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+          className="w-full rounded bg-blue-500 px-4 py-2 font-bold hover:bg-blue-600"
         >
           Sign in with Google
         </button>

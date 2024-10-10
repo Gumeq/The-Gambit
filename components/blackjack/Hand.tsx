@@ -15,6 +15,7 @@ const Hand: React.FC<HandProps> = ({
 }) => {
   const getBorderClass = () => {
     if (result === "win") return "border-4 border-green-500";
+    if (result === "push") return "border-4 border-yellow-500";
     if (result === "loss" || result === "bust")
       return "border-4 border-red-500";
     return "";

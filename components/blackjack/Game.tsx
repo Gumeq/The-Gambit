@@ -9,7 +9,9 @@ import { useAuth } from "../providers/auth-provider";
 import {
   decrementUserBalance,
   incrementUserBalance,
+  incrementUserExp,
 } from "@/utils/firebase/user-data";
+import { EXP_MULTIPLIERS } from "@/utils/constants";
 
 interface PlayerHand {
   hand: Card[];
@@ -88,6 +90,7 @@ const Game: React.FC = () => {
     try {
       // Deduct the bet amount from Firestore
       await decrementUserBalance(userData.id, betAmount);
+      await incrementUserExp(userData.id, betAmount * EXP_MULTIPLIERS["BJ"]);
 
       // Start the game with the bet amount
       await startGame(betAmount);
@@ -240,6 +243,10 @@ const Game: React.FC = () => {
     try {
       // Deduct insurance amount from player's balance
       await decrementUserBalance(userData.id, insuranceAmount);
+      await incrementUserExp(
+        userData.id,
+        insuranceAmount * EXP_MULTIPLIERS["BJ"],
+      );
 
       setInsuranceBetAmount(insuranceAmount);
       setIsInsuranceOffered(false);
@@ -334,6 +341,10 @@ const Game: React.FC = () => {
     try {
       // Deduct balance in Firestore
       await decrementUserBalance(userData.id, currentHand.bet);
+      await incrementUserExp(
+        userData.id,
+        currentHand.bet * EXP_MULTIPLIERS["BJ"],
+      );
 
       // Double the bet and proceed
       currentHand.bet *= 2;
@@ -379,6 +390,10 @@ const Game: React.FC = () => {
     try {
       // Deduct balance in Firestore
       await decrementUserBalance(userData.id, currentHand.bet);
+      await incrementUserExp(
+        userData.id,
+        currentHand.bet * EXP_MULTIPLIERS["BJ"],
+      );
 
       const firstCard = currentHand.hand[0];
       const secondCard = currentHand.hand[1];

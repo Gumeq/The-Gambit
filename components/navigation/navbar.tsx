@@ -138,25 +138,25 @@ const Navbar = ({ children }: NavbarProps) => {
               <h2 className="text-sm text-foreground/50">Bonuses</h2>
               <div className="flex flex-col">
                 <NavLink
-                  href="/bonus/daily"
+                  href="/bonus"
                   iconOutline={DailyIconOutline}
                   iconFill={DailyIconFill}
                   label="Daily Bonus"
                 />
                 <NavLink
-                  href="/bonus/weekly"
+                  href="/bonus"
                   iconOutline={WeeklyIconOutline}
                   iconFill={WeeklyIconFill}
                   label="Weekly Bonus"
                 />
                 <NavLink
-                  href="/bonus/level"
+                  href="/bonus"
                   iconOutline={LevelIconOutline}
                   iconFill={LevelIconFill}
                   label="Level Bonus"
                 />
                 <NavLink
-                  href="/bonus/promocode"
+                  href="/bonus"
                   iconOutline={PromoIconOutline}
                   iconFill={PromoIconFill}
                   label="Promocode"
@@ -275,7 +275,7 @@ const Navbar = ({ children }: NavbarProps) => {
               </div>
             </div>
           </div>
-          <div className="mx-auto w-full max-w-7xl overflow-x-hidden">
+          <div className="mx-auto min-h-screen w-full max-w-7xl overflow-x-hidden">
             {children}
           </div>
           <footer className="mt-20 border-t-2 py-8 text-white">
