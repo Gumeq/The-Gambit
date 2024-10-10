@@ -168,7 +168,7 @@ const Game: React.FC = () => {
     const playerHasBlackjack = playerTotal === 21;
     const dealerHasBlackjack = dealerTotal === 21;
 
-    let messageList: string[] = [];
+    const messageList: string[] = [];
 
     if (dealerHasBlackjack) {
       // Reveal dealer's hole card
@@ -428,7 +428,7 @@ const Game: React.FC = () => {
 
   const determineWinners = async (dealer: Player) => {
     const dealerTotal = calculateHandValue(dealer.hand);
-    let messageList: string[] = [];
+    const messageList: string[] = [];
 
     if (userData === null || userData === undefined) {
       setMessage("User data not available.");
@@ -606,7 +606,7 @@ const Game: React.FC = () => {
         {isInsuranceOffered && (
           <div className="insurance-offer mt-4 rounded-lg bg-foreground/5 p-4">
             <p className="mb-2 text-lg">
-              Dealer's upcard is an Ace. Do you want to take insurance?
+              Dealer&apos;s upcard is an Ace. Do you want to take insurance?
             </p>
             <div className="flex gap-2">
               <button
