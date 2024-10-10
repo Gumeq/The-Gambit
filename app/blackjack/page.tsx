@@ -1,10 +1,10 @@
-import BlackjackGame from "@/components/blackjack";
+import Game from "@/components/blackjack/Game";
 import React from "react";
 
 const page = () => {
   return (
-    <div>
-      <BlackjackGame></BlackjackGame>
+    <div className="">
+      <Game></Game>
     </div>
   );
 };
