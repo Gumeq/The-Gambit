@@ -59,6 +59,10 @@ const Game: React.FC = () => {
   const [playerHands, setPlayerHands] = useState<PlayerHand[]>([]);
   const [currentHandIndex, setCurrentHandIndex] = useState<number>(0);
 
+  // Insurance-related state variables
+  const [isInsuranceOffered, setIsInsuranceOffered] = useState<boolean>(false);
+  const [insuranceBetAmount, setInsuranceBetAmount] = useState<number>(0);
+
   // Function to handle starting the game after placing a bet
   const handleStartGame = async () => {
     if (betAmount <= 0) {
@@ -94,6 +98,10 @@ const Game: React.FC = () => {
   };
 
   const startGame = async (betAmount: number) => {
+    // Reset insurance variables
+    setInsuranceBetAmount(0);
+    setIsInsuranceOffered(false);
+
     const newDeck = new Deck(6);
     setDeck(newDeck);
 
@@ -117,8 +125,8 @@ const Game: React.FC = () => {
       bet: betAmount,
     };
 
-    newDealer.hand.push(newDeck.draw());
-    newDealer.hand.push(newDeck.draw());
+    newDealer.hand.push(newDeck.draw()); // Dealer's hole card (face down)
+    newDealer.hand.push(newDeck.draw()); // Dealer's upcard (face up)
 
     setPlayerHands([playerHand]);
     setCurrentHandIndex(0);
@@ -126,37 +134,130 @@ const Game: React.FC = () => {
     setIsGameOver(false);
     setMessage("");
 
-    // Check for Blackjack after initial deal
+    // Check if dealer's upcard is an Ace and offer insurance
+    const dealerUpcard = newDealer.hand[1]; // The second card is the upcard
+    if (dealerUpcard.rank === "A") {
+      setIsInsuranceOffered(true);
+      return; // Wait for player's insurance decision
+    } else if (["10", "J", "Q", "K"].includes(dealerUpcard.rank)) {
+      // Dealer peeks for blackjack
+      await checkForBlackjack();
+    } else {
+      // Game continues without checking for blackjack
+      setMessage("Game started. Your move.");
+    }
+  };
+
+  const checkForBlackjack = async () => {
+    if (
+      balance === null ||
+      balance === undefined ||
+      userData === null ||
+      userData === undefined
+    ) {
+      setMessage("User data not available.");
+      return;
+    }
+
+    const playerHand = playerHands[currentHandIndex];
     const playerTotal = calculateHandValue(playerHand.hand);
-    const dealerTotal = calculateHandValue(newDealer.hand);
+
+    // Calculate dealer's total only using the hole card and upcard
+    const dealerTotal = calculateHandValue(dealer.hand.slice(0, 2));
 
     const playerHasBlackjack = playerTotal === 21;
     const dealerHasBlackjack = dealerTotal === 21;
 
-    if (playerHasBlackjack || dealerHasBlackjack) {
-      if (userData === null || userData === undefined) {
-        setMessage("User data not available.");
+    let messageList: string[] = [];
+
+    if (dealerHasBlackjack) {
+      // Reveal dealer's hole card
+      setIsGameOver(true);
+
+      if (insuranceBetAmount > 0) {
+        // Pay out insurance bet at 2:1
+        await incrementUserBalance(userData.id, insuranceBetAmount * 2);
+        messageList.push("Dealer has Blackjack. You win the insurance bet.");
+      } else {
+        messageList.push("Dealer has Blackjack.");
+      }
+
+      if (playerHasBlackjack) {
+        // Push on original bet
+        await incrementUserBalance(userData.id, player.bet);
+        messageList.push(
+          "You also have Blackjack. It's a push on your main bet.",
+        );
+      } else {
+        messageList.push("You lose your main bet.");
+      }
+
+      setMessage(messageList.join(" "));
+      return;
+    } else {
+      messageList.push("Dealer does not have Blackjack.");
+
+      if (insuranceBetAmount > 0) {
+        // Player loses insurance bet
+        messageList.push("You lose the insurance bet.");
+      }
+
+      if (playerHasBlackjack) {
+        // Player wins with blackjack
+        await incrementUserBalance(userData.id, player.bet * 2.5); // Blackjack pays 3:2
+        messageList.push("Blackjack! You win!");
+        setIsGameOver(true);
+        setMessage(messageList.join(" "));
         return;
       }
 
-      if (playerHasBlackjack && dealerHasBlackjack) {
-        // Push
-        await incrementUserBalance(userData.id, betAmount); // Return bet to player
-        setMessage("Both you and the dealer have Blackjack! It's a push.");
-      } else if (playerHasBlackjack) {
-        // Player wins with Blackjack
-        await incrementUserBalance(userData.id, betAmount * 2.5); // Blackjack pays 3:2
-        setMessage("Blackjack! You win!");
-      } else {
-        // Dealer has Blackjack
-        setMessage("Dealer has Blackjack. You lose.");
-      }
-      newPlayer.bet = 0;
-      setIsGameOver(true);
-      setPlayer(newPlayer);
-      setDealer(newDealer);
+      setMessage(messageList.join(" "));
+      // Game continues as normal
+    }
+  };
+
+  // Function to handle the player's decision to take insurance
+  const handleTakeInsurance = async () => {
+    if (userData === null || userData === undefined) {
+      setMessage("User data not available.");
       return;
     }
+
+    if (balance === null || balance === undefined) {
+      setMessage("Balance not available.");
+      return;
+    }
+
+    const insuranceAmount = player.bet / 2;
+
+    if (balance < insuranceAmount) {
+      setMessage("You don't have enough balance for insurance.");
+      setIsInsuranceOffered(false);
+      await checkForBlackjack();
+      return;
+    }
+
+    try {
+      // Deduct insurance amount from player's balance
+      await decrementUserBalance(userData.id, insuranceAmount);
+
+      setInsuranceBetAmount(insuranceAmount);
+      setIsInsuranceOffered(false);
+
+      // Proceed to check for blackjack
+      await checkForBlackjack();
+    } catch (error) {
+      setMessage("An error occurred while placing insurance bet.");
+      console.error(error);
+    }
+  };
+
+  const handleDeclineInsurance = async () => {
+    setInsuranceBetAmount(0);
+    setIsInsuranceOffered(false);
+
+    // Proceed to check for blackjack
+    await checkForBlackjack();
   };
 
   // Add safety check for accessing playerHands and currentHandIndex
@@ -314,6 +415,9 @@ const Game: React.FC = () => {
   const playDealerHand = async () => {
     const newDealer = { ...dealer };
 
+    // Reveal dealer's hole card
+    setIsGameOver(true);
+
     while (calculateHandValue(newDealer.hand) < 17) {
       newDealer.hand.push(deck.draw());
     }
@@ -324,7 +428,7 @@ const Game: React.FC = () => {
 
   const determineWinners = async (dealer: Player) => {
     const dealerTotal = calculateHandValue(dealer.hand);
-    const messageList: string[] = [];
+    let messageList: string[] = [];
 
     if (userData === null || userData === undefined) {
       setMessage("User data not available.");
@@ -363,7 +467,8 @@ const Game: React.FC = () => {
   };
 
   // Helper functions to determine if actions are available
-  const isGameInProgress = () => !isGameOver && player.bet > 0;
+  const isGameInProgress = () =>
+    !isGameOver && player.bet > 0 && !isInsuranceOffered;
 
   const isHandActive = (hand: PlayerHand) => calculateHandValue(hand.hand) < 21;
 
@@ -408,6 +513,12 @@ const Game: React.FC = () => {
     <div className="flex w-full overflow-hidden rounded-lg bg-foreground/5 text-white">
       {/* Left side */}
       <div className="flex w-1/4 flex-col gap-4 p-4">
+        <div className="-mb-3 flex flex-row justify-between text-sm font-semibold text-foreground/50">
+          <p>Bet Amount</p>
+          <p className="">
+            {balance !== null && balance !== undefined ? balance : "..."}
+          </p>
+        </div>
         <div className="flex w-full flex-row rounded bg-foreground/5 p-1">
           <input
             id="betAmount"
@@ -491,10 +602,28 @@ const Game: React.FC = () => {
           <pre className="mt-4 whitespace-pre-wrap text-primary">{message}</pre>
         )}
 
-        <p className="mt-4 text-2xl">
-          Your Balance: $
-          {balance !== null && balance !== undefined ? balance : "Loading..."}
-        </p>
+        {/* Insurance offer */}
+        {isInsuranceOffered && (
+          <div className="insurance-offer mt-4 rounded-lg bg-foreground/5 p-4">
+            <p className="mb-2 text-lg">
+              Dealer's upcard is an Ace. Do you want to take insurance?
+            </p>
+            <div className="flex gap-2">
+              <button
+                className="btn w-full rounded-lg bg-primary px-4 py-2 text-white"
+                onClick={handleTakeInsurance}
+              >
+                Yes
+              </button>
+              <button
+                className="btn w-full rounded-lg bg-primary px-4 py-2 text-white"
+                onClick={handleDeclineInsurance}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Right side */}
