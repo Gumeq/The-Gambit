@@ -1,6 +1,7 @@
 export const EXP_MULTIPLIERS = {
   WHEEL: 0.25,
   BJ: 0.5,
+  MINES: 0.25,
 };
 
 export const BASE_EXP = 1000; // Each level requires 10,000 EXP

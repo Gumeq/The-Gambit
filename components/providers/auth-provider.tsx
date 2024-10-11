@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
             // Update balance separately if it exists in the document
             if (userData.balance !== undefined) {
-              setBalance(userData.balance); // Set real-time balance
+              setBalance(userData.balance.toFixed(2)); // Set real-time balance
             } else {
               setBalance(null); // If no balance field is present, set to null
             }

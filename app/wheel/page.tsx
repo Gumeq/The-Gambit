@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import BetWindow from "@/components/bet-window";
-import BetTypeButtons from "@/components/bet-type-buttons";
+import BetTypeButtons from "@/components/wheel/bet-type-buttons";
 import { updateUserBalance } from "@/utils/firebase/user-data";
 import { useAuth } from "@/components/providers/auth-provider";
 import Pusher from "pusher-js";
-import RouletteWheel from "@/components/roulette-wheel";
+import RouletteWheel from "@/components/wheel/roulette-wheel";
 import { addBet, listenToSpinData } from "@/lib/wheel/game-state";
+import BetWindow from "@/components/wheel/bet-window";
 
 const Page = () => {
   const [betAmount, setBetAmount] = useState(0);

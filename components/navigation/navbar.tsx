@@ -79,7 +79,7 @@ const Navbar = ({ children }: NavbarProps) => {
 
   return (
     <nav className="z-50">
-      <div className="relative hidden flex-row lg:flex lg:h-svh lg:w-screen">
+      <div className="relative flex flex-row lg:h-svh lg:w-screen">
         <div className="no-scrollbar flex min-w-[250px] flex-col justify-between gap-8 overflow-y-auto border-r-2 bg-background pl-8 pt-8">
           <div className="flex flex-col gap-8">
             <div className="flex w-full flex-col gap-2">
@@ -138,25 +138,25 @@ const Navbar = ({ children }: NavbarProps) => {
               <h2 className="text-sm text-foreground/50">Bonuses</h2>
               <div className="flex flex-col">
                 <NavLink
-                  href="/bonus"
+                  href="/bonus/daily"
                   iconOutline={DailyIconOutline}
                   iconFill={DailyIconFill}
                   label="Daily Bonus"
                 />
                 <NavLink
-                  href="/bonus"
+                  href="/bonus/weekly"
                   iconOutline={WeeklyIconOutline}
                   iconFill={WeeklyIconFill}
                   label="Weekly Bonus"
                 />
                 <NavLink
-                  href="/bonus"
+                  href="/bonus/level"
                   iconOutline={LevelIconOutline}
                   iconFill={LevelIconFill}
                   label="Level Bonus"
                 />
                 <NavLink
-                  href="/bonus"
+                  href="/bonus/promocode"
                   iconOutline={PromoIconOutline}
                   iconFill={PromoIconFill}
                   label="Promocode"
@@ -249,7 +249,9 @@ const Navbar = ({ children }: NavbarProps) => {
                         <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
-                          <Link href={"/profile"}>Profile</Link>
+                          <Link href={"/profile"} className="h-full w-full">
+                            Profile
+                          </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem>Settings</DropdownMenuItem>
                         <DropdownMenuItem>Deposit</DropdownMenuItem>

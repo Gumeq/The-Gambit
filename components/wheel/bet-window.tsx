@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import UserBalance from "./user/user-balance";
-import { useAuth } from "./providers/auth-provider";
+import { useAuth } from "../providers/auth-provider";
+import UserBalance from "../user/user-balance";
 
 const BetWindow = ({
   betAmount,
@@ -41,7 +41,7 @@ const BetWindow = ({
   };
 
   return (
-    <div className="mt-20 flex w-full flex-col gap-2 rounded-md border p-2">
+    <div className="flex w-full flex-col gap-2 rounded-md border p-2">
       <div className="flex flex-row items-center justify-center gap-2 rounded-md border p-1 font-bold">
         <img
           src="/assets/images/chip.png"

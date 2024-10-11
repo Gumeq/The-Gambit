@@ -1,6 +1,6 @@
 import React from "react";
 import { DocumentData } from "firebase/firestore";
-import LevelBadgeSmall from "./level-badge-small";
+import LevelBadgeSmall from "../level-badge-small";
 
 type UserBetCardProps = {
   user: DocumentData;
