@@ -37,7 +37,7 @@ const Square: React.FC<SquareProps> = ({
 
   return (
     <button
-      className={`flex h-32 w-32 items-center justify-center rounded text-2xl transition-all duration-300 ${
+      className={`flex h-32 w-32 cursor-pointer items-center justify-center rounded text-2xl transition-all duration-300 ${
         revealed
           ? hasMine
             ? "bg-red-500"
