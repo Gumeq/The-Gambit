@@ -7,6 +7,7 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
+import { BASE_EXP, getLevelAndProgress } from "../constants";
 
 // Fetch user data from Firestore based on userId
 export const fetchUserData = async (userId: string) => {
@@ -96,10 +97,29 @@ export async function isEligibleForWeeklyBonus(userId: string) {
   return daysSinceLastClaim >= 7;
 }
 
+export async function levelBonusesToClaim(userId: string) {
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+
+  if (userSnap.exists()) {
+    const currentExp = userSnap.data().exp;
+    const { level: currentLevel } = getLevelAndProgress(currentExp);
+    let lastClaimed = userSnap.data().lastLevelBonusClaimed;
+    if (!lastClaimed) {
+      lastClaimed = 0;
+    }
+    if (currentLevel > lastClaimed) {
+      return currentLevel - lastClaimed;
+    }
+  }
+  return 0;
+}
+
 export async function giveBonusToUser(
   userId: string,
   amount: number,
-  bonusType: "daily" | "weekly" | null = null,
+  bonusType: "daily" | "weekly" | "level" | null = null,
+  currentLevel?: number,
 ): Promise<void> {
   const userRef = doc(db, "users", userId);
   const updateData: Record<string, any> = {
@@ -109,6 +129,8 @@ export async function giveBonusToUser(
     updateData.lastDailyBonusClaimed = Timestamp.now();
   } else if (bonusType === "weekly") {
     updateData.lastWeeklyBonusClaimed = Timestamp.now();
+  } else if (bonusType === "level" && currentLevel) {
+    updateData.lastLevelBonusClaimed = currentLevel;
   }
   await updateDoc(userRef, updateData);
 }

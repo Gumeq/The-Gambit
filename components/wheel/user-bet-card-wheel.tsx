@@ -12,7 +12,7 @@ const UserBetCardWheel = ({ user, bet }: UserBetCardProps) => {
     <div className="flex w-full flex-row justify-between rounded-md bg-foreground/5 p-2">
       <div className="flex flex-row items-center gap-2">
         <LevelBadgeSmall exp={user.exp}></LevelBadgeSmall>
-        <p>{user.displayName}</p>
+        <p className="max-w-[50%] truncate">{user.displayName}</p>
       </div>
       <div className="flex flex-row items-center gap-2">
         <img src="/assets/images/chip.png" className="ml-2 h-4 w-4" alt="" />

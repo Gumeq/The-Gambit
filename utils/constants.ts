@@ -4,7 +4,7 @@ export const EXP_MULTIPLIERS = {
   MINES: 0.25,
 };
 
-export const BASE_EXP = 1000; // Each level requires 10,000 EXP
+export const BASE_EXP = 10000; // Each level requires 10,000 EXP
 
 /**
  * Function to calculate the user's current level and progress percentage to the next level.

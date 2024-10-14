@@ -42,13 +42,32 @@ const SignIn = () => {
           level: 0,
           lastDailyBonusClaimed: null,
           lastWeeklyBonusClaimed: null,
+          lastLevelBonusClaimed: null,
+          unlockedProfilePictures: [],
         });
       } else {
-        // If user exists, just update the last login timestamp
+        // If user exists, update missing fields and last login
         await setDoc(
           userDocRef,
           {
+            displayName: user.displayName ?? userDocSnap.data().displayName, // Add if missing
+            email: user.email ?? userDocSnap.data().email, // Add if missing
+            // photoURL: user.photoURL ?? userDocSnap.data().photoURL, // Add if missing
+            photoUrl:
+              user.photoURL ??
+              "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
             lastLogin: serverTimestamp(),
+            balance: userDocSnap.data().balance ?? 10000, // Add if missing
+            exp: userDocSnap.data().exp ?? 0, // Add if missing
+            level: userDocSnap.data().level ?? 0, // Add if missing
+            lastDailyBonusClaimed:
+              userDocSnap.data().lastDailyBonusClaimed ?? null,
+            lastWeeklyBonusClaimed:
+              userDocSnap.data().lastWeeklyBonusClaimed ?? null,
+            lastLevelBonusClaimed:
+              userDocSnap.data().lastLevelBonusClaimed ?? null,
+            unlockedProfilePictures:
+              userDocSnap.data().unlockedProfilePictures ?? [], // Add if missing
           },
           { merge: true },
         );

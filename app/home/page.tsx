@@ -1,12 +1,16 @@
 import React from "react";
 import CategorySelect from "./category_select";
+import Link from "next/link";
 
 const Page = () => {
   return (
     <div className="flex w-full flex-col gap-8">
       {/* Promotional Sections */}
       <div className="grid w-full grid-cols-2 gap-8">
-        <div className="h-64 w-full overflow-hidden rounded-3xl bg-purple-600 p-8 shadow-[inset_0_0_50px_10px_rgba(255,255,255,0.1)] drop-shadow-xl">
+        <Link
+          href={"/bonus/daily"}
+          className="h-64 w-full overflow-hidden rounded-3xl bg-purple-600 p-8 shadow-[inset_0_0_50px_10px_rgba(255,255,255,0.1)] drop-shadow-xl"
+        >
           <div className="relative flex h-full w-full flex-grow flex-row">
             <img
               src="/assets/images/calendar.png"
@@ -25,8 +29,11 @@ const Page = () => {
               <h2 className="text-4xl font-bold">COLLECT BONUS EVERYDAY</h2>
             </div>
           </div>
-        </div>
-        <div className="h-64 w-full overflow-hidden rounded-3xl bg-green-600 p-8 shadow-[inset_0_0_50px_10px_rgba(255,255,255,0.1)] drop-shadow-xl">
+        </Link>
+        <Link
+          href={"/bonus/weekly"}
+          className="h-64 w-full overflow-hidden rounded-3xl bg-green-600 p-8 shadow-[inset_0_0_50px_10px_rgba(255,255,255,0.1)] drop-shadow-xl"
+        >
           <div className="relative flex h-full w-full flex-grow flex-row">
             <img
               src="/assets/images/money.png"
@@ -45,7 +52,7 @@ const Page = () => {
               <h2 className="text-4xl font-bold">10000 WELCOME BONUS</h2>
             </div>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* CategorySelect component with selection logic */}

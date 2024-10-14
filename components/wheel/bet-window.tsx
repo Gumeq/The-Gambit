@@ -15,7 +15,7 @@ const BetWindow = ({
 
   // Function to adjust the bet amount
   const handleAmountChange = (increment: number) => {
-    setBetAmount(betAmount + increment);
+    setBetAmount(Number(betAmount) + Number(increment));
   };
 
   const handleHalfBet = () => {
@@ -58,6 +58,7 @@ const BetWindow = ({
         value={betAmount}
         onChange={handleInputChange}
         min={0}
+        max={balance || 0}
       />
       {/* Buttons to modify the bet */}
       <div className="flex w-full flex-row gap-2">

@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,23 +44,32 @@ import ShieldIconFill from "@/public/assets/icons/shield_fill.svg";
 import ShieldIconOutline from "@/public/assets/icons/shield_outline.svg";
 import StatsIconFill from "@/public/assets/icons/analytics_fill.svg";
 import StatsIconOutline from "@/public/assets/icons/analytics_outline.svg";
+import StoreIconFill from "@/public/assets/icons/shop_fill.svg";
+import StoreIconOutline from "@/public/assets/icons/shop_outline.svg";
 import SendIconFill from "@/public/assets/icons/send_fill.svg";
-// import SendIconOutline from "@/public/assets/icons/send_outline.svg";
 import TelegramIcon from "@/public/assets/icons/telegram.svg";
 import RulesIcon from "@/public/assets/icons/rules_fill.svg";
 import PeopleIcon from "@/public/assets/icons/group_fill.svg";
 import NavLink from "./nav_link";
 import LevelBadge from "../level-badge";
-import { incrementUserBalance } from "@/utils/firebase/user-data";
+import {
+  incrementUserBalance,
+  isEligibleForDailyBonus,
+  isEligibleForWeeklyBonus,
+  levelBonusesToClaim,
+} from "@/utils/firebase/user-data";
 
 interface NavbarProps {
   children: ReactNode;
 }
 const Navbar = ({ children }: NavbarProps) => {
+  const [isEligibleForDaily, setIsEligibleForDaily] = useState(false);
+  const [isEligibleForWeekly, setIsEligibleForWeekly] = useState(false);
+  const [levelBonuses, setLevelBonuses] = useState(0);
   const { userData: user } = useAuth();
 
   // State to manage chat visibility
-  const [isChatVisible, setIsChatVisible] = useState(true);
+  const [isChatVisible, setIsChatVisible] = useState(false);
 
   // Toggle function for chat visibility
   const toggleChat = () => {
@@ -77,6 +86,25 @@ const Navbar = ({ children }: NavbarProps) => {
     }
   };
 
+  useEffect(() => {
+    const checkBonuses = async () => {
+      if (user && user.id) {
+        try {
+          const dailyBonusEligible = await isEligibleForDailyBonus(user.id);
+          const weeklyBonusEligible = await isEligibleForWeeklyBonus(user.id);
+          const levelBonuses = await levelBonusesToClaim(user.id);
+          setIsEligibleForDaily(dailyBonusEligible);
+          setIsEligibleForWeekly(weeklyBonusEligible);
+          setLevelBonuses(levelBonuses);
+        } catch (err) {
+          console.error("Error checking bonus eligibility:", err);
+        }
+      }
+    };
+
+    checkBonuses();
+  }, [user]); // Re-run when user changes
+
   return (
     <nav className="z-50">
       <div className="relative flex flex-row lg:h-svh lg:w-screen">
@@ -90,6 +118,12 @@ const Navbar = ({ children }: NavbarProps) => {
                   iconOutline={HomeIconOutline}
                   iconFill={HomeIconFill}
                   label="Home"
+                />
+                <NavLink
+                  href="/store"
+                  iconOutline={StoreIconOutline}
+                  iconFill={StoreIconFill}
+                  label="Store"
                 />
               </div>
             </div>
@@ -137,24 +171,39 @@ const Navbar = ({ children }: NavbarProps) => {
             <div className="flex w-full flex-col gap-2">
               <h2 className="text-sm text-foreground/50">Bonuses</h2>
               <div className="flex flex-col">
-                <NavLink
-                  href="/bonus/daily"
-                  iconOutline={DailyIconOutline}
-                  iconFill={DailyIconFill}
-                  label="Daily Bonus"
-                />
-                <NavLink
-                  href="/bonus/weekly"
-                  iconOutline={WeeklyIconOutline}
-                  iconFill={WeeklyIconFill}
-                  label="Weekly Bonus"
-                />
-                <NavLink
-                  href="/bonus/level"
-                  iconOutline={LevelIconOutline}
-                  iconFill={LevelIconFill}
-                  label="Level Bonus"
-                />
+                <div className="relative flex w-full">
+                  {isEligibleForDaily && (
+                    <div className="absolute -left-2 top-0 z-10 h-2 w-2 animate-pulse rounded-full bg-primary"></div>
+                  )}
+                  <NavLink
+                    href="/bonus/daily"
+                    iconOutline={DailyIconOutline}
+                    iconFill={DailyIconFill}
+                    label="Daily Bonus"
+                  />
+                </div>
+                <div className="relative flex w-full">
+                  {isEligibleForWeekly && (
+                    <div className="absolute -left-2 top-0 z-10 h-2 w-2 animate-pulse rounded-full bg-primary"></div>
+                  )}
+                  <NavLink
+                    href="/bonus/weekly"
+                    iconOutline={WeeklyIconOutline}
+                    iconFill={WeeklyIconFill}
+                    label="Weekly Bonus"
+                  />
+                </div>
+                <div className="relative flex w-full">
+                  {levelBonuses > 0 && (
+                    <div className="absolute -left-2 top-0 z-10 h-2 w-2 animate-pulse rounded-full bg-primary"></div>
+                  )}
+                  <NavLink
+                    href="/bonus/level"
+                    iconOutline={LevelIconOutline}
+                    iconFill={LevelIconFill}
+                    label="Level Bonus"
+                  />
+                </div>
                 <NavLink
                   href="/bonus/promocode"
                   iconOutline={PromoIconOutline}
@@ -204,7 +253,7 @@ const Navbar = ({ children }: NavbarProps) => {
         </div>
         <div className="no-scrollbar w-full overflow-y-auto bg-foreground/5">
           <div className="mb-8 h-20 w-full bg-background">
-            <div className="h-full w-full border-b-2 bg-foreground/5">
+            <div className="h-full w-full border-b-2 bg-foreground/5 px-8">
               <div className="mx-auto flex h-full w-full max-w-7xl flex-row justify-between py-4">
                 <Link
                   href={"/"}
@@ -212,68 +261,70 @@ const Navbar = ({ children }: NavbarProps) => {
                 >
                   <h1 className="text-xl font-bold">SPINVIBE</h1>
                 </Link>
-                {user ? (
-                  <div className="flex h-full flex-row items-center gap-2 rounded-xl bg-foreground/10 font-bold">
-                    <img
-                      src="/assets/images/chip.png"
-                      className="ml-4 h-4 w-4"
-                      alt=""
-                    />
-                    <div className="min-w-12">
-                      <UserBalance />
-                    </div>
-                    <div className="h-full w-4"></div>
-                    <div
-                      className="flex h-full cursor-pointer items-center rounded-lg bg-primary px-4"
-                      onClick={handleIncrement}
-                    >
-                      Cashier
-                    </div>
+                <div className="flex h-full flex-row items-center gap-2 rounded-xl bg-foreground/10 font-bold">
+                  <img
+                    src="/assets/images/chip.png"
+                    className="ml-4 h-4 w-4"
+                    alt=""
+                  />
+                  <div className="min-w-12">{user && <UserBalance />}</div>
+                  <div className="h-full w-4"></div>
+                  <div
+                    className="flex h-full cursor-pointer items-center rounded-lg bg-primary px-4"
+                    onClick={handleIncrement}
+                  >
+                    Cashier
                   </div>
-                ) : (
-                  <div></div>
-                )}
-                {user ? (
-                  <div className="flex h-full flex-row items-center gap-4">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="h-full">
-                        <div className="flex h-full flex-row items-center gap-4 overflow-hidden rounded-lg bg-foreground/10 drop-shadow-md">
-                          <img
-                            src={user.photoURL}
-                            alt=""
-                            className="aspect-[1/1] h-full"
-                          />
-                        </div>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          <Link href={"/profile"} className="h-full w-full">
-                            Profile
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>Settings</DropdownMenuItem>
-                        <DropdownMenuItem>Deposit</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <ModeToggle />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <LevelBadge exp={user.exp}></LevelBadge>
-                    <div
-                      className="z-10 flex aspect-[1/1] h-full cursor-pointer items-center justify-center rounded-lg bg-primary/30 drop-shadow-lg"
-                      onClick={toggleChat} // Toggle chat on click
+                </div>
+                <div className="flex h-full flex-row items-center gap-4">
+                  {user ? (
+                    <>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="h-full">
+                          <div className="flex h-full flex-row items-center gap-4 overflow-hidden rounded-lg bg-foreground/10 drop-shadow-md">
+                            <img
+                              src={user.photoURL}
+                              alt=""
+                              className="aspect-[1/1] h-full"
+                            />
+                          </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>
+                            <Link href={"/profile"} className="h-full w-full">
+                              Profile
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>Settings</DropdownMenuItem>
+                          <DropdownMenuItem>Deposit</DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <ModeToggle />
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      <LevelBadge exp={user.exp}></LevelBadge>
+                    </>
+                  ) : (
+                    <Link
+                      href={"/auth/signin"}
+                      className="flex h-full w-32 items-center justify-center rounded-lg bg-primary font-semibold"
                     >
-                      {isChatVisible ? (
-                        <ChatIconFill className="h-6 w-6 text-primary" />
-                      ) : (
-                        <ChatIconOutline className="h-6 w-6 text-primary" />
-                      )}
-                    </div>
+                      Login
+                    </Link>
+                  )}
+
+                  <div
+                    className="z-10 flex aspect-[1/1] h-full cursor-pointer items-center justify-center rounded-lg bg-primary/30 drop-shadow-lg"
+                    onClick={toggleChat} // Toggle chat on click
+                  >
+                    {isChatVisible ? (
+                      <ChatIconFill className="h-6 w-6 text-primary" />
+                    ) : (
+                      <ChatIconOutline className="h-6 w-6 text-primary" />
+                    )}
                   </div>
-                ) : (
-                  <Link href={"/auth/signin"}>No user</Link>
-                )}
+                </div>
               </div>
             </div>
           </div>
