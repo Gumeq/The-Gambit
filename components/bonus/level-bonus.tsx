@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import {
   giveBonusToUser,
-  isEligibleForDailyBonus,
   levelBonusesToClaim,
 } from "@/utils/firebase/user-data";
 import { useAuth } from "../providers/auth-provider";
@@ -11,10 +10,8 @@ import { getLevelAndProgress } from "@/utils/constants";
 
 const LevelBonus: React.FC = () => {
   const { userData } = useAuth(); // Get user data from your context
-  const [dailyEligible, setDailyEligible] = useState<boolean>(false);
   const [levelBonuses, setLevelBonuses] = useState<number>(0);
   const [currentLevel, setCurrentLevel] = useState<number>(0);
-  const [dailyTimer, setDailyTimer] = useState<string>("");
   const [progress, setProgress] = useState<number>(0); // Add a state for the progress bar
 
   useEffect(() => {
@@ -31,11 +28,6 @@ const LevelBonus: React.FC = () => {
       const levelBonuses = await levelBonusesToClaim(userId);
       console.log(levelBonuses);
       setLevelBonuses(levelBonuses);
-
-      if (levelBonuses > 0 && userData && userData.lastLevelBonusClaimed) {
-        // If not eligible, set the timer for daily bonus using data from userData
-        const lastLevelBonus = userData.lastLevelBonusClaimed;
-      }
     } catch (error) {
       console.error("Error checking daily bonus eligibility:", error);
     }
@@ -79,7 +71,7 @@ const LevelBonus: React.FC = () => {
         disabled={levelBonuses <= 0} // Disable the button if not eligible
         className={`absolute bottom-4 right-4 rounded px-16 py-2 transition-all duration-200 ${levelBonuses > 0 ? "cursor-pointer bg-primary/80 hover:scale-110" : "cursor-not-allowed bg-foreground/10"}`}
       >
-        {dailyEligible ? "Claim" : "Claim"}
+        {levelBonuses > 0 ? "Claim" : "Claim"}
       </button>
     </div>
   );

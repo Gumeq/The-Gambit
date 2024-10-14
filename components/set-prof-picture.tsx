@@ -5,9 +5,16 @@ import { getDoc, doc, updateDoc } from "firebase/firestore"; // Firestore functi
 import { useAuth } from "./providers/auth-provider"; // Use your auth provider for real-time user data
 import { db } from "@/config/firebase";
 
+type Pictures = {
+  name: string;
+  price: number;
+  url: string;
+  id: string;
+};
+
 const ProfilePictureSelection = () => {
   const { userData } = useAuth(); // Assuming useAuth gives you current user's data
-  const [unlockedPictures, setUnlockedPictures] = useState<any[]>([]);
+  const [unlockedPictures, setUnlockedPictures] = useState<Pictures[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,7 +78,7 @@ const ProfilePictureSelection = () => {
   if (error) return <div>{error}</div>;
 
   if (!unlockedPictures || unlockedPictures.length === 0) {
-    return <p>You haven't unlocked any profile pictures yet.</p>;
+    return <p>You havent unlocked any profile pictures yet.</p>;
   }
 
   return (
