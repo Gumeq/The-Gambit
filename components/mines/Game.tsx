@@ -1,6 +1,5 @@
 "use client";
 
-// Game.tsx
 import React, { useState, useEffect } from "react";
 import Square from "./Square";
 import { useAuth } from "../providers/auth-provider";
@@ -41,7 +40,6 @@ const Game: React.FC = () => {
   }, [gameStarted]);
 
   const initializeGrid = () => {
-    // Create empty grid with unique objects
     const newGrid: SquareState[][] = Array.from({ length: gridSize }, () =>
       Array.from({ length: gridSize }, () => ({
         hasMine: false,
@@ -50,7 +48,6 @@ const Game: React.FC = () => {
     );
 
     if (gameStarted) {
-      // Randomly place mines
       let minesPlaced = 0;
       while (minesPlaced < minesCount) {
         const row = Math.floor(Math.random() * gridSize);
@@ -74,7 +71,6 @@ const Game: React.FC = () => {
     const square = grid[row][col];
 
     if (square.hasMine) {
-      // Reveal the mine
       const newGrid = grid.map((gridRow, rowIndex) =>
         gridRow.map((cell, colIndex) => {
           if (rowIndex === row && colIndex === col) {
@@ -84,13 +80,11 @@ const Game: React.FC = () => {
         }),
       );
       setGrid(newGrid);
-      // Handle game over
       setMessage(
         `Clicked square ${row + 1}x${col + 1}, mine found! Game over.`,
       );
       setGameStarted(false);
     } else {
-      // Reveal the square
       const newGrid = grid.map((gridRow, rowIndex) =>
         gridRow.map((cell, colIndex) => {
           if (rowIndex === row && colIndex === col) {
@@ -103,7 +97,6 @@ const Game: React.FC = () => {
 
       const newSafeClicks = safeClicks + 1;
       setSafeClicks(newSafeClicks);
-      // Update multiplier based on safe clicks
       const newMultiplier = calculateMultiplier(
         newSafeClicks,
         totalSquares,
@@ -179,11 +172,37 @@ const Game: React.FC = () => {
     );
   };
 
-  // Calculate potential profit
   const potentialProfit =
     gameStarted && betAmount
       ? parseFloat((betAmount * multiplier).toFixed(2))
       : 0;
+
+  useEffect(() => {
+    const adScriptConfig = document.createElement("script");
+    adScriptConfig.type = "text/javascript";
+    adScriptConfig.innerHTML = `
+      atOptions = {
+        'key' : '8fb5579118bbd7c598361a7fc241cfd2',
+        'format' : 'iframe',
+        'height' : 600,
+        'width' : 160,
+        'params' : {}
+      };
+    `;
+
+    const adScriptSrc = document.createElement("script");
+    adScriptSrc.type = "text/javascript";
+    adScriptSrc.src =
+      "//www.topcpmcreativeformat.com/8fb5579118bbd7c598361a7fc241cfd2/invoke.js";
+
+    document.body.appendChild(adScriptConfig);
+    document.body.appendChild(adScriptSrc);
+
+    return () => {
+      document.body.removeChild(adScriptConfig);
+      document.body.removeChild(adScriptSrc);
+    };
+  }, []);
 
   return (
     <div className="flex w-full overflow-hidden rounded-lg bg-foreground/5 text-white">
@@ -236,7 +255,6 @@ const Game: React.FC = () => {
             </div>
           </div>
         </div>
-        {/* Mines Selection */}
         <div className="">
           <label className="block text-sm font-semibold text-foreground/50">
             Number of Mines
@@ -253,7 +271,6 @@ const Game: React.FC = () => {
           />
         </div>
 
-        {/* Potential Profit and Multiplier */}
         {gameStarted && (
           <>
             <p className="-mb-3 text-sm font-semibold text-foreground/50">
@@ -275,7 +292,7 @@ const Game: React.FC = () => {
         >
           Place Bet
         </button>
-        {/* Withdraw Button */}
+
         {gameStarted && (
           <button
             className="btn mt-2 w-full rounded-lg bg-green-500 px-4 py-4 text-white"
@@ -284,10 +301,18 @@ const Game: React.FC = () => {
             Cashout
           </button>
         )}
-        {/* Message Display */}
+
         {message && (
-          <pre className="mt-4 whitespace-pre-wrap text-primary">{message}</pre>
+          <>
+            <pre className="mt-4 whitespace-pre-wrap text-primary">
+              {message}
+            </pre>
+          </>
         )}
+        <div
+          id="adsterra-ad"
+          className="mt-4 rounded-lg bg-background p-4"
+        ></div>
       </div>
 
       {/* Right side */}
